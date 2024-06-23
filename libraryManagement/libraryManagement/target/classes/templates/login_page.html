@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Form</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+    }
+    .login-container {
+        width: 300px;
+        margin: 100px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .login-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .login-container input[type="text"],
+    .login-container input[type="password"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    .login-container input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+    .login-container input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+    .forgot-password {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .social-icons {
+        text-align: center;
+    }
+    .social-icons a {
+        margin-right: 10px;
+    }
+    .social-icons a:last-child {
+        margin-right: 0;
+    }
+    .password-container {
+        position: relative;
+    }
+    #toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+    #toggle-password:hover {
+        color: blue;
+    }
+    .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: none; /* Initially hidden */
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+  </style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>Login</h2>
+  <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+  <form  method="post" action="/login" th:object="${loginRequest}">
+    <input type="email" name="emailAddress" placeholder="EmailAddress" required>
+
+    <div class="password-container">
+      <input type="password" id="password-input" name="password" placeholder="Password" required>
+      <i class="fa fa-eye-slash" id="toggle-password"></i>
+    </div>
+
+    <input type="submit" value="Login">
+  </form>
+  <div class="forgot-password">
+    <a href="#">Forgot Password?</a>
+  </div>
+  <div class="social-icons">
+    <a href="#"><i class="fab fa-facebook"></i></a>
+    <a href="#"><i class="fab fa-twitter"></i></a>
+    <a href="#"><i class="fab fa-instagram"></i></a>
+  </div>
+</div>
+
+<script>
+  document.getElementById('toggle-password').addEventListener('click', function() {
+      var passwordInput = document.getElementById('password-input');
+      if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          this.classList.remove('fa-eye-slash');
+          this.classList.add('fa-eye');
+      } else {
+          passwordInput.type = 'password';
+          this.classList.remove('fa-eye');
+          this.classList.add('fa-eye-slash');
+      }
+  });
+</script>
+<script>
+  // JavaScript to show and hide the pop-up message
+  document.addEventListener('DOMContentLoaded', function () {
+      var alert = document.querySelector('.alert');
+      if (alert) {
+          alert.style.display = 'block'; // Show the alert
+          setTimeout(function () {
+              alert.style.display = 'none'; // Hide the alert after 5 seconds
+          }, 5000); // 5000 milliseconds = 5 seconds
+      }
+  });
+</script>
+</body>
+</html>
