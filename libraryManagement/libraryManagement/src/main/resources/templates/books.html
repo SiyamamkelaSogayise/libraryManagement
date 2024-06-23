@@ -198,5 +198,66 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const booksTableBody = document.getElementById('booksTableBody');
+
+    function populateBooksTable(books) {
+        booksTableBody.innerHTML = '';
+
+        books.forEach(book => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${book.author}</td>
+                <td>${book.title}</td>
+                <td>${book.category}</td>
+                <td><a href="/book/show?bookId=${book.id}">${book.title}</a></td>
+            `;
+            booksTableBody.appendChild(row);
+        });
+    }
+
+    function fetchBooks() {
+        fetch('/admin/books')  // Endpoint to fetch all books
+            .then(response => response.json())
+            .then(books => {
+                populateBooksTable(books);
+            })
+            .catch(error => console.error('Error fetching books:', error));
+    }
+
+    // Initial population of table on page load
+    fetchBooks();
+
+    // Example: Search function (similar to what you have)
+    function searchBooks() {
+        var input = document.getElementById("searchBox");
+        var filter = input.value.toLowerCase();
+        var table = document.getElementById("booksTable");
+        var tr = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < tr.length; i++) {
+            tr[i].classList.remove("highlight");
+            var td = tr[i].getElementsByTagName("td");
+            var matched = false;
+            for (var j = 0; j < td.length; j++) {
+                if (td[j]) {
+                    if (td[j].innerText.toLowerCase().indexOf(filter) > -1) {
+                        matched = true;
+                    }
+                }
+            }
+            if (matched) {
+                tr[i].style.display = "";
+                tr[i].classList.add("highlight");
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+});
+
+</script>
 </body>
 </html>

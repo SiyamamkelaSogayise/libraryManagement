@@ -1,22 +1,25 @@
 package com.libraryManagementSystem2.controller;
 
 import com.libraryManagementSystem2.model.User;
+import com.libraryManagementSystem2.model.Book;
 import com.libraryManagementSystem2.service.UserService;
+import com.libraryManagementSystem2.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
 @Controller
 public class UserController {
 
     private final UserService userService;
+    private final BookService bookService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, BookService bookService) {
         this.userService = userService;
+        this.bookService = bookService;
     }
 
     @GetMapping("/register")
@@ -32,37 +35,30 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute User user, Model model,RedirectAttributes redirectAttributes) {
+    public String register(@ModelAttribute User user, Model model, RedirectAttributes redirectAttributes) {
         System.out.println("Register request: " + user);
 
-        // Validate user input
         if (!isUserInputValid(user, model)) {
-            return "register_page"; // Return to registration page with errors
+            return "register_page";
         }
 
-        // Attempt to register new user
         User registeredUser = userService.registerNewUser(user.getName(), user.getIdNumber(), user.getDateOfBirth(), user.getAddress(), user.getPhoneNumber(), user.getEmailAddress(), user.getUsername(), user.getPassword(), user.getConfirmPassword());
 
         if (registeredUser == null) {
-            return "error_page"; // Handle registration failure
+            return "error_page";
         } else {
             redirectAttributes.addFlashAttribute("message", "Successfully registered. Please log in.");
-            return "redirect:/login"; // Redirect to login page on successful registration
+            return "redirect:/login";
         }
     }
 
-    // Method to validate user input
     private boolean isUserInputValid(User user, Model model) {
-        // Add your validation logic here
         boolean isValid = true;
 
-        // Example validation: Check if passwords match
         if (!user.getPassword().equals(user.getConfirmPassword())) {
             model.addAttribute("passwordMatchError", "Passwords do not match");
             isValid = false;
         }
-
-        // Additional validation can be added for other fields
 
         return isValid;
     }
@@ -71,25 +67,43 @@ public class UserController {
     public String login(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
         System.out.println("Login request: " + user.getEmailAddress());
 
-        // Validate input (optional based on your needs)
         if (user.getEmailAddress() == null || user.getPassword() == null) {
-            return "index"; // Return to index page or handle error
+            return "index";
         }
 
-        // Authenticate using email and password
         User authenticatedUser = userService.authenticate(user.getEmailAddress(), user.getPassword());
 
-
         if (authenticatedUser == null) {
-            return "index"; // Handle login failure
+            return "index";
         } else {
             redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
-            return "redirect:/books"; // Redirect to books page on successful login
+            return "redirect:/books";
         }
     }
 
     @GetMapping("/books")
     public String getBooksPage() {
-        return "books"; // Return the name of the HTML template for the books page
+        return "books";
+    }
+
+    // Admin Routes
+    @GetMapping("/admin/login")
+    public String getAdminLoginForm(Model model) {
+        model.addAttribute("loginRequest", new User());
+        return "admin_login";
+    }
+
+
+
+    @GetMapping("/admin/portal")
+    public String getAdminPortal(Model model) {
+        model.addAttribute("book", new Book());
+        return "admin_portal";
+    }
+
+    @PostMapping("/admin/add-book")
+    public String addBook(@ModelAttribute("book") Book book) {
+        bookService.saveOrUpdateBook(book);
+        return "redirect:/admin/portal";
     }
 }

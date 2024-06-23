@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Portal</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
 <div class="sidebar">
+    <div th:if="${param.logoutSuccess}" class="alert alert-success">
+        <strong>Success!</strong> You have successfully logged in.
+    </div>
     <h2>Admin Portal</h2>
+
     <ul>
         <li><a href="#addBook">Add Book</a></li>
         <li><a href="#addUser">Add User</a></li>
@@ -19,26 +23,34 @@
     </ul>
 </div>
 
-<div id="addBook" class="content-section">
+<div id="add_book" class="content-section">
     <h2>Add Book</h2>
-    <form id="addBookForm">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required><br>
-
-        <label for="author">Author:</label>
-        <input type="text" id="author" name="author" required><br>
-
-        <label for="publicationDate">Publication Date:</label>
-        <input type="date" id="publicationDate" name="publicationDate" required><br>
-
-        <label for="category">Category:</label>
-        <select id="category" name="category" required>
-            <option value="fiction">Fiction</option>
-            <option value="non-fiction">Non-Fiction</option>
-        </select><br>
-
-        <button type="submit">Add Book</button>
+    <form th:action="@{/admin/add-book}" method="post" th:object="${book}">
+        <div>
+            <label>Title:</label>
+            <input type="text" th:field="*{title}" required>
+        </div>
+        <div>
+            <label>Author:</label>
+            <input type="text" th:field="*{author}" required>
+        </div>
+        <div>
+            <label>Publication Date:</label>
+            <input type="date" th:field="*{publicationDate}" required>
+        </div>
+        <div>
+            <label>Category:</label>
+            <input type="text" th:field="*{category}" required>
+        </div>
+        <div>
+            <label>Number of Copies:</label>
+            <input type="number" th:field="*{numberOfCopies}" required>
+        </div>
+        <div>
+            <button type="submit">Add Book</button>
+        </div>
     </form>
+
 </div>
 
 <div id="addUser" class="content-section">
@@ -112,16 +124,11 @@
             <th>Author</th>
             <th>Publication Date</th>
             <th>Category</th>
+            <th>Copies Available</th>
         </tr>
         </thead>
-        <tbody>
-        <!-- This section will be populated with Thymeleaf -->
-        <tr th:each="book : ${books}">
-            <td th:text="${book.title}"></td>
-            <td th:text="${book.author}"></td>
-            <td th:text="${#dates.format(book.publicationDate, 'yyyy-MM-dd')}"></td>
-            <td th:text="${book.category}"></td>
-        </tr>
+        <tbody id="bookTableBody">
+        <!-- Books will be dynamically added here -->
         </tbody>
     </table>
 </div>
@@ -134,5 +141,16 @@
 </div>
 
 <script src="script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+       var alert = document.querySelector('.alert');
+       if (alert) {
+           alert.style.display = 'block'; // Show the alert
+           setTimeout(function () {
+               alert.style.display = 'none'; // Hide the alert after 5 seconds
+           }, 5000); // 5000 milliseconds = 5 seconds
+       }
+   });
+</script>
 </body>
 </html>

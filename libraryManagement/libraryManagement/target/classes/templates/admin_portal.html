@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="sidebar">
+    <div th:if="${param.logoutSuccess}" class="alert alert-success">
+        <strong>Success!</strong> You have successfully logged in.
+    </div>
+    <h2>Admin Portal</h2>
+
+    <ul>
+        <li><a href="#addBook">Add Book</a></li>
+        <li><a href="#addUser">Add User</a></li>
+        <li><a href="#manageUsers">Manage Users</a></li>
+        <li><a href="#issueBooks">Issue Books</a></li>
+        <li><a href="#listBooks">List Available Books</a></li>
+        <li><a href="#Deshboard">Deshboard</a></li>
+    </ul>
+</div>
+
+<div id="add_book" class="content-section">
+    <h2>Add Book</h2>
+    <form th:action="@{/admin/add-book}" method="post" th:object="${book}">
+        <div>
+            <label>Title:</label>
+            <input type="text" th:field="*{title}" required>
+        </div>
+        <div>
+            <label>Author:</label>
+            <input type="text" th:field="*{author}" required>
+        </div>
+        <div>
+            <label>Publication Date:</label>
+            <input type="date" th:field="*{publicationDate}" required>
+        </div>
+        <div>
+            <label>Category:</label>
+            <input type="text" th:field="*{category}" required>
+        </div>
+        <div>
+            <label>Number of Copies:</label>
+            <input type="number" th:field="*{numberOfCopies}" required>
+        </div>
+        <div>
+            <button type="submit">Add Book</button>
+        </div>
+    </form>
+
+</div>
+
+<div id="addUser" class="content-section">
+    <h2>Add User</h2>
+    <form id="addUserForm">
+        <label for="fullName">Full Name:</label>
+        <input type="text" id="fullName" name="fullName" required><br>
+
+        <label for="idNumber">ID Number:</label>
+        <input type="text" id="idNumber" name="idNumber" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <button type="submit">Add User</button>
+    </form>
+</div>
+
+
+<div id="manageUsers" class="content-section">
+    <h2>Manage Users</h2>
+    <p>Here you can suspend or unsuspend users.</p>
+    <div id="userManagementInterface">
+        <div th:each="user : ${users}">
+            <span th:text="${user.name}"></span> <!-- Replace with actual user data -->
+            <button th:if="${!user.suspended}" th:id="'suspendButton_' + ${user.id}" th:onclick="'suspendUser(\'' + ${user.id} + '\')'">
+                Suspend
+            </button>
+            <button th:if="${user.suspended}" th:id="'unsuspendButton_' + ${user.id}" th:onclick="'unsuspendUser(\'' + ${user.id} + '\')'">
+                Unsuspend
+            </button>
+        </div>
+    </div>
+    <div>
+        <label for="userId">Enter User ID to Unsuspend:</label>
+        <input type="text" id="userId" name="userId" placeholder="User ID">
+        <button onclick="unsuspendUserById()">Unsuspend by ID</button>
+    </div>
+</div>
+
+
+
+<div id="issueBooks" class="content-section">
+    <h2>Issue Books</h2>
+    <form id="issueBooksForm">
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" name="userId" required><br>
+
+        <label for="bookId">Book ID:</label>
+        <input type="text" id="bookId" name="bookId" required><br>
+
+        <button type="submit">Issue Book</button>
+    </form>
+</div>
+
+<div id="listBooks" class="content-section">
+    <form id="searchBooksForm">
+        <input type="text" id="searchTerm" name="searchTerm" placeholder="Search by Title or Author">
+        <button type="button" id="searchButton"><i class="fas fa-search"></i></button>
+    </form>
+
+    <h2>List Available Books</h2>
+    <!-- Table to display books -->
+    <table id="bookTable">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Publication Date</th>
+            <th>Category</th>
+            <th>Copies Available</th>
+        </tr>
+        </thead>
+        <tbody id="bookTableBody">
+        <!-- Books will be dynamically added here -->
+        </tbody>
+    </table>
+</div>
+
+<div id="Deshboard" class="content-section">
+    <h2>Admin Portal Dashboard</h2>
+    <div id="dashboardContainer">
+        <!-- Power BI Embedded Dashboard will be loaded here -->
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+       var alert = document.querySelector('.alert');
+       if (alert) {
+           alert.style.display = 'block'; // Show the alert
+           setTimeout(function () {
+               alert.style.display = 'none'; // Hide the alert after 5 seconds
+           }, 5000); // 5000 milliseconds = 5 seconds
+       }
+   });
+</script>
+</body>
+</html>
