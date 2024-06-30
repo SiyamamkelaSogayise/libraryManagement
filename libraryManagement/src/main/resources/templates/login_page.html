@@ -93,6 +93,7 @@
   <h2>Login</h2>
   <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
   <form  method="post" action="/login" th:object="${loginRequest}">
+    <div class="password-container">
     <input type="email" name="emailAddress" placeholder="EmailAddress" required>
 
     <div class="password-container">

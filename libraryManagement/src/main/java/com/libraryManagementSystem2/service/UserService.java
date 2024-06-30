@@ -1,15 +1,19 @@
 package com.libraryManagementSystem2.service;
 
+import com.libraryManagementSystem2.model.Book;
+import com.libraryManagementSystem2.repository.BookRepository;
 import com.libraryManagementSystem2.repository.UserRepository;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
 import com.libraryManagementSystem2.model.User;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service("UserService")
@@ -17,14 +21,34 @@ public class UserService {
 
     @Autowired
     private final UserRepository userRepository;
+    private final BookRepository bookRepository;
 
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository, BookRepository bookRepository){
         this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
+    }
+
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+    public User findById(Integer id) {
+        return userRepository.findById(id).orElse(null);
+    }
+    public List<User> listUsers() {
+        return userRepository.findAll();
+    }
+
+    public User addUser(User user) {
+        return userRepository.save(user);
     }
 
 
+    public User findByEmail(String email) {
+        return userRepository.findByEmailAddress(email);
+    }
 
-    public User registerNewUser(String name, long idNumber, LocalDate dateOfBirth, String address, String phoneNumber, String emailAddress, String username, String password, String confirmPassword) {
+
+    public User registerNewUser(String name, long idNumber, LocalDate dateOfBirth, String address, String phoneNumber, String emailAddress, String username, String password, String confirmPassword, String role) {
         // Validate input parameters
         if (username == null || password == null || confirmPassword == null ||
                 name == null || address == null || phoneNumber == null || emailAddress == null || dateOfBirth == null) {
@@ -52,6 +76,11 @@ public class UserService {
         user.setUsername(username);
         user.setPassword(password); // Note: For production, consider hashing the password
         user.setConfirmPassword(confirmPassword);
+        user.setRole(role);
+
+
+        // Set admin role based on specific conditions (example)
+
 
         try {
             return userRepository.save(user);
@@ -63,11 +92,65 @@ public class UserService {
 
 
 
-    public User authenticate(String emailAddress, String password){
-        return userRepository.findByEmailAddressAndPassword(emailAddress, password).orElse(null);
+
+public User authenticate(String emailAddress, String password) {
+    return userRepository.findByEmailAddressAndPassword(emailAddress, password).orElse(null);
+}
+    public User addUser(String name, long idNumber, LocalDate dateOfBirth, String address, String phoneNumber,
+                        String emailAddress, String username, String password, String confirmPassword, String role) {
+        // Validate input parameters
+        if (username == null || password == null || confirmPassword == null ||
+                name == null || address == null || phoneNumber == null || emailAddress == null || dateOfBirth == null) {
+            throw new IllegalArgumentException("All fields are required.");
+        }
+
+        // Check if passwords match
+        if (!password.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+
+        // Check if a user with the same username or email already exists
+        if (userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("Username already exists.");
+        }
+
+        if (userRepository.existsByEmailAddress(emailAddress)) {
+            throw new IllegalArgumentException("Email address already exists.");
+        }
+
+        // Create a new user object
+        User user = new User();
+        user.setName(name);
+        user.setIdNumber(idNumber);
+        user.setDateOfBirth(dateOfBirth);
+        user.setAddress(address);
+        user.setPhoneNumber(phoneNumber);
+        user.setEmailAddress(emailAddress);
+        user.setUsername(username);
+        user.setPassword(password); // Note: For production, consider hashing the password
+        user.setRole(role);
+
+        try {
+            return userRepository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to add user.", e);
+        }
+    }
+
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+    public User getCurrentUser() {
+        // Logic to retrieve the currently logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userRepository.findByUsername(username);
     }
 
 
 
-
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 }

@@ -1,10 +1,8 @@
 package com.libraryManagementSystem2.model;
 
-
 import jakarta.persistence.*;
-
-//import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -12,22 +10,23 @@ import java.util.Objects;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-     int id;
-     String name;
+    private int id;
+    private String name;
+    private long idNumber;
+    private LocalDate dateOfBirth;
+    private String address;
+    private String phoneNumber;
+    private String emailAddress;
+    private String username;
+    private String password;
+    private String confirmPassword;
+    private String role = "USER";
 
-     long idNumber;
+    @OneToMany(mappedBy = "borrowedBy")
+    private List<Book> borrowedBooks;
 
-     LocalDate dateOfBirth;
-     String address;
-
-     String phoneNumber;
-
-     String emailAddress;
-     String username;
-     String password;
-
-     String confirmPassword;
-
+    // Getters and setters
+    // ...
 
     public int getId() {
         return id;
@@ -109,17 +108,29 @@ public class User {
         this.confirmPassword = confirmPassword;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isAdmin() {
+        return "ADMIN".equalsIgnoreCase(this.role);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return idNumber == user.idNumber && Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(dateOfBirth, user.dateOfBirth) && Objects.equals(address, user.address) && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(emailAddress, user.emailAddress) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(confirmPassword, user.confirmPassword);
+        return idNumber == user.idNumber && id == user.id && Objects.equals(name, user.name) && Objects.equals(dateOfBirth, user.dateOfBirth) && Objects.equals(address, user.address) && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(emailAddress, user.emailAddress) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(confirmPassword, user.confirmPassword) && Objects.equals(role, user.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, idNumber, dateOfBirth, address, phoneNumber, emailAddress, username, password, confirmPassword);
+        return Objects.hash(id, name, idNumber, dateOfBirth, address, phoneNumber, emailAddress, username, password, confirmPassword, role);
     }
 
     @Override
@@ -133,7 +144,7 @@ public class User {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", username='" + username + '\'' +
+                ", role='" + role + '\'' +
                 '}';
     }
-
 }

@@ -147,7 +147,7 @@
                 </a>
             </li>
             <li class="logout">
-                <a href="index.html">
+                <a href="/logout">
                     <i class="fas fa-sign-out-alt"></i>  <span>Sign Out</span>
                 </a>
             </li>
@@ -169,7 +169,7 @@
                 <img id="profilePicture" th:src="@{/static/css/emptyprofile.jpg}" alt="Profile Picture">
             </label>
             <input type="file" id="fileUpload" style="display: none;">
-            <!-- Display User's Name and Surname -->
+
 
         </div>
 
@@ -180,20 +180,28 @@
         <h2>Available Books</h2>
         <thead>
         <tr>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Category</th>
             <th>Author</th>
-            <th>Book Name</th>
-            <th>Book Category</th>
-            <th>Select/Click Book</th>
+            <th>Quantity</th>
+            <th>Borrow Books</th>
+
         </tr>
         </thead>
         <tbody>
+        <!-- Iterate over each book and display its details -->
         <tr th:each="book : ${books}">
-            <td th:text="${book.author}"></td>
-            <td th:text="${book.title}"></td>
-            <td th:text="${book.category}"></td>
+            <td th:text="${book.isbn}">ISBN</td>
+            <td th:text="${book.title}">Title</td>
+            <td th:text="${book.category}">Category</td>
+            <td th:text="${book.author}">Author</td>
+            <td th:text="${book.quantity}">Quantity</td>
+            <!-- Inside userPortal.html -->
             <td>
-                <a th:id="'borrow_' + ${book.id}" th:text="${book.title}" th:href="@{'/book/show?bookId=' + ${book.id}}"></a>
+                <a th:id="'borrow_' + ${book.id}" th:text="${book.title}" th:href="@{'/admin/books/' + ${book.id} + '/borrow'}">Borrow</a>
             </td>
+
         </tr>
         </tbody>
     </table>

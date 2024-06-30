@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Registration</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<form class="registration-form" action="/admin/register" method="post" th:object="${registerRequest}">
+    <h2>Library Registration</h2>
+    <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="idNumber">ID Number</label>
+        <input type="text" id="idNumber" name="idNumber" required>
+    </div>
+    <div class="form-group">
+        <label for="dateOfBirth">Date of Birth</label>
+        <input type="date" id="dateOfBirth" name="dateOfBirth" required >
+    </div>
+    <div class="form-group">
+        <label for="address">Address</label>
+        <input type="text" id="address" name="address" required>
+    </div>
+    <div class="form-group">
+        <label for="phoneNumber">Phone Number</label>
+        <input type="tel" id="phoneNumber" name="phoneNumber"  required>
+        <div class="error" id="phoneError"></div>
+    </div>
+    <div class="form-group">
+        <label for="emailAddress">Email Address</label>
+        <input type="email" id="emailAddress" name="emailAddress" >
+        <span class="tooltip">We'll never share your email with anyone else.</span>
+        <div class="error" id="emailError"></div>
+    </div>
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+        <div class="password-strength" id="passwordStrength"></div>
+        <span class="tooltip" id="passwordRequirements">Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special case.</span>
+    </div>
+    <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+        <div id="passwordMatchError" class="error"></div>
+    </div>
+
+    <input type="hidden" id="role" name="role" value="ADMIN">
+    <button type="submit">Register</button>
+</form>
+
+
+<script>
+    function clearForm() {
+        // Clear all input fields
+        var inputs = document.querySelectorAll('.registration-form input');
+        inputs.forEach(function(input) {
+          input.value = "";
+        });
+
+        // Clear any error messages
+        var errorFields = document.querySelectorAll('.error');
+        errorFields.forEach(function(errorField) {
+          errorField.textContent = "";
+        });
+
+        // Clear any class added for password mismatch
+        document.getElementById("confirmPassword").classList.remove("password-mismatch");
+      }
+
+      document.getElementById("confirmPassword").addEventListener('input', function() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = this.value;
+        var confirmPasswordField = this;
+        var errorField = document.getElementById("passwordMatchError");
+
+        if (password !== confirmPassword) {
+          confirmPasswordField.classList.add("password-mismatch");
+          errorField.textContent = "Passwords do not match";
+        } else {
+          confirmPasswordField.classList.remove("password-mismatch");
+          errorField.textContent = "";
+        }
+      });
+
+</script>
+
+</body>
+</html>
