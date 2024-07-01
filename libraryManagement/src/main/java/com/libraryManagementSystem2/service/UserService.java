@@ -22,10 +22,12 @@ public class UserService {
     @Autowired
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository, BookRepository bookRepository){
+    public UserService(UserRepository userRepository, BookRepository bookRepository, EmailService emailService){
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
+        this.emailService = emailService;
     }
 
     public List<Book> getAllBooks() {
@@ -43,11 +45,21 @@ public class UserService {
     }
 
 
+
+    // Method for handling forgot password functionality
     public User findByEmail(String email) {
         return userRepository.findByEmailAddress(email);
     }
 
-
+    public boolean sendPasswordResetEmail(String email, long idNumber) {
+        User user = findByEmail(email);
+        if (user != null && Long.valueOf(idNumber).equals(user.getIdNumber())) {
+            // Send the password reset email
+            emailService.sendPasswordResetEmail(user);
+            return true;
+        }
+        return false;
+    }
     public User registerNewUser(String name, long idNumber, LocalDate dateOfBirth, String address, String phoneNumber, String emailAddress, String username, String password, String confirmPassword, String role) {
         // Validate input parameters
         if (username == null || password == null || confirmPassword == null ||
@@ -152,5 +164,19 @@ public User authenticate(String emailAddress, String password) {
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public boolean updateUserProfile(long idNumber, String username, String email, String phone) {
+        Optional<User> optionalUser = userRepository.findById(idNumber);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setUsername(username);
+            user.setEmailAddress(email);
+            user.setPhoneNumber(phone);
+            userRepository.save(user);
+            return true;
+        } else {
+            return false; // User with userId not found
+        }
     }
 }

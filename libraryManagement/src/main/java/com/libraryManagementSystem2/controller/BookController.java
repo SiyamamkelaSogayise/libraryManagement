@@ -73,9 +73,9 @@ public class BookController {
         return "redirect:/admin/books/list"; // Redirect to list of books after editing
     }
 
-    @PostMapping("/{bookId}/borrow")
+    /*@PostMapping("/{bookId}/borrow")
     public String borrowBook(@PathVariable("bookId") Integer bookId, Principal principal, Model model) {
-        String username = principal.getName(); // Get logged-in username
+        String username = principal.getUsername(); // Get logged-in username
         User user = userService.findByUsername(username);
 
         if (user != null) {
@@ -90,7 +90,7 @@ public class BookController {
         }
 
         return "redirect:/user/portal"; // Redirect to the user portal page or another appropriate page
-    }
+    }*/
 
 
 

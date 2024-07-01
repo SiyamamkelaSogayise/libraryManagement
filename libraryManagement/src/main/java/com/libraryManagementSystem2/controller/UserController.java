@@ -5,6 +5,7 @@ import com.libraryManagementSystem2.model.User;
 import com.libraryManagementSystem2.service.BookService;
 import com.libraryManagementSystem2.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,43 @@ public class UserController {
         model.addAttribute("loginRequest", new User());
         return "login_page";
     }
+
+    @GetMapping("/help")
+    public String getHelpPage() {
+        return "help_page"; // Return the name of the HTML template for the help page
+    }
+
+    @PostMapping("/help")
+    public String help_page() {
+        return "help_page";
+    }
+
+    @GetMapping("/history")
+    public String getBookHistory() {
+        return "bookHistory"; // Return the name of the HTML template for the book history page
+    }
+
+    @PostMapping("/history")
+    public String bookHistory() {
+        return "bookHistory";
+    }
+
+    @GetMapping("/settings")
+    public String getSettings(Model model, @AuthenticationPrincipal Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        String emailAddress = principal.getName();
+        User user = userService.findByEmail(emailAddress);
+        model.addAttribute("user", user);
+        return "settings";
+    }
+
+    @PostMapping("/settings")
+    public String settings() {
+        return "settings";
+    }
+
 
     @PostMapping("/register")
     public String register(@ModelAttribute User user, @RequestParam("role") String role, Model model, RedirectAttributes redirectAttributes) {
@@ -126,13 +164,13 @@ public class UserController {
         model.addAttribute("books", books);
         return "userPortal";
     }
-    @GetMapping("/userPortal/user")
+    /*@GetMapping("/userPortal/user")
     public String userPortal(Model model, Principal principal) {
         String userEmail = principal.getName(); // Assuming principal.getName() gives the user's email
         User user = userService.findByEmail(userEmail); // Fetch user object from service based on email
         model.addAttribute("user", user); // Add user object to the model
         return "userPortal"; // Return the Thymeleaf template name
-    }
+    }*/
 
     @GetMapping("/admin/dashboard/managers")
     public String listUsers(Model model) {
@@ -154,6 +192,44 @@ public class UserController {
         return "userPortal";
     }
 
+    // Forgot Password Mappings
+    @GetMapping("/forgot-password")
+    public String getForgotPasswordForm() {
+        return "forgot_password_page"; // Return the name of the HTML template for the forgot password page
+    }
+
+    @PostMapping("/forgot-password")
+    public String handleForgotPassword(@RequestParam String forgotEmail, @RequestParam long idNumber, RedirectAttributes redirectAttributes) {
+        boolean sent = userService.sendPasswordResetEmail(forgotEmail, idNumber);
+        if (sent) {
+            redirectAttributes.addFlashAttribute("message", "Password reset email sent.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Email and ID number do not match or user not found.");
+        }
+        return "redirect:/login";
+    }
+
+    @PostMapping("/user/settings/profile")
+    public String updateProfile(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) {
+
+        // Ensure user object is not null and contains necessary fields
+        if (user == null || user.getIdNumber() == 0 || user.getUsername() == null || user.getEmailAddress() == null || user.getPhoneNumber() == null) {
+            redirectAttributes.addFlashAttribute("message", "Invalid user information provided.");
+            return "redirect:/settings";
+        }
+
+        // Perform profile update
+        boolean success = userService.updateUserProfile(user.getIdNumber(), user.getUsername(), user.getEmailAddress(), user.getPhoneNumber());
+
+        // Handle success or failure
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "Profile updated successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Failed to update profile. Please try again.");
+        }
+
+        return "redirect:/settings";
+    }
 
 
 

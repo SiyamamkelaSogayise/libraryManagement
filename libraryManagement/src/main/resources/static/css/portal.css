@@ -76,6 +76,7 @@ body {
     position: relative;
     background: #ebe9e9;
     width: 100%;
+    height: 100%;
     padding: 1rem;
 }
 
@@ -124,10 +125,10 @@ body {
     cursor:pointer;
     transition: all 0.5s ease-out;
 }
-.search--box i:over{
+.search--box i:hover{
     transform: scale(1.2);
 }
 .borrowBook{
     border-radius:50px;
-    text-align:centre;
+    text-align:;
 }

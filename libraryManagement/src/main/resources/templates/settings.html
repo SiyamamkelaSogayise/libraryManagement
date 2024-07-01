@@ -1,93 +1,364 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>User Settings</title>
-    <link rel="stylesheet" href="../static/css/landing.css">
+    <link rel="stylesheet" th:href="@{/css/landing.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            border: none;
+            outline: none;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body a {
+            color: black;
+            text-decoration: none; /* Optional: Remove underline */
+        }
+
+        body a:hover {
+            color: darkviolet; /* Optional: Change color on hover */
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            margin: 0;
+            background-color: #E7F2F8;
+        }
+
+        .container {
+            text-align: center;
+            color: #333;
+            padding: 20px;
+            z-index: 1;
+            max-width: 1200px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin: 20px;
+            margin-left: 250px;
+            margin-top: 80px;
+            flex-grow: 1;
+        }
+
+        .forms-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .forms-container section {
+            flex: 1;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        button {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #3A596F;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            background-image: url('land.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+
+        footer {
+            background-color: #3A596F;
+            color: white;
+            padding: 10px 5px;
+            text-align: center;
+            width: 100%;
+            max-height: 150px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        footer div {
+            margin: 0 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        footer i {
+            margin-right: 5px;
+        }
+
+        .btn_notif {
+            margin-top: 109px;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 110px;
+            height: 100vh;
+            padding: 0 1.9rem;
+            color: #fff;
+            overflow: hidden;
+            transition: all 0.5s linear;
+            background: rgba(113, 99, 186, 255);
+        }
+
+        .sidebar:hover {
+            width: 300px;
+            transition: 0.5s;
+        }
+
+        .logo {
+            height: 80px;
+            padding: 16px;
+        }
+
+        .menu {
+            height: 88%;
+            position: relative;
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            list-style: none;
+            padding: 1rem;
+            margin: 8px 0;
+            border-radius: 8px;
+            transition: all 0.5s ease-in-out;
+        }
+
+        li:hover, .active {
+            background: #e0e0e058;
+        }
+
+        a {
+            color: #fff;
+            font-size: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        span {
+            overflow: hidden;
+        }
+
+        i {
+            font-size: 1.2rem;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .main-content {
+            margin-left: 110px;
+        }
+
+        footer .contact,
+        footer .address,
+        footer .opening {
+            flex: 1;
+        }
+
+        footer h3 {
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        function showPopup(message) {
+        alert(message);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const pushNotificationCheckbox = document.querySelector('input[name="pushNotifications"]');
+        pushNotificationCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+        showPopup('Push Notifications Enabled');
+        } else {
+        showPopup('Push Notifications Disabled');
+        }
+        });
+        });
+    </script>
+
 </head>
-
 <body>
-
-<div class="container">
+<div class="sidebar">
+    <div class="logo">
+        <ul class="main">
+            <li>
+                <a th:href="@{/userPortal}">
+                    <i class="fas fa-home"></i> <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/history}">
+                    <i class="fas fa-book"></i> <span>Borrowed Books</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/help}">
+                    <i class="fas fa-question-circle"></i> <span>Help</span>
+                </a>
+            </li>
+            <li class="active">
+                <a th:href="@{/settings}">
+                    <i class="fas fa-cog"></i> <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/logout}">
+                    <i class="fas fa-sign-out-alt"></i> <span>Sign Out</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
-<div>
-    <h1>User Settings</h1>
 
-    <!-- Update Profile Section -->
-    <section id="update-profile">
-        <h2>Update Profile</h2>
-        <form id="profileForm" action="/user/settings/profile" method="post">
-            <label for="username">Username:</label><br>
-            <input type="text" id="username" name="username" value="current_username" required><br><br>
+<div class="main-content">
+    <div class="container">
+        <h1>User Settings</h1>
 
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" value="current_email@example.com" required><br><br>
+        <div class="forms-container">
+            <!-- Update Profile Section -->
+            <section id="update-profile">
+                <h2>Update Profile</h2>
+                <form id="profileForm" th:action="@{/user/settings/profile}" method="post">
+                    <label for="username">Username:</label><br>
+                    <input type="text" id="username" name="username" th:value="${user.username}" required><br><br>
 
-            <label for="phone">Phone:</label><br>
-            <input type="tel" id="phone" name="phone" value="current_phone"><br><br>
+                    <label for="emailAddress">Email:</label><br>
+                    <input type="email" id="emailAddress" name="emailAddress"  th:value="${user.emailAddress}" required><br><br>
 
-            <button type="submit">Update Profile</button>
-        </form>
-    </section>
+                    <label for="phoneNumber">Phone:</label><br>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" th:value="${user.phoneNumber}" ><br><br>
 
-    <!-- Change Password Section -->
-    <section id="change-password">
-        <h2>Change Password</h2>
-        <form id="passwordForm" action="/user/settings/password" method="post">
-            <label for="currentPassword">Current Password:</label><br>
-            <input type="password" id="currentPassword" name="currentPassword" required><br><br>
+                    <button type="submit">Update Profile</button>
+                </form>
+            </section>
 
-            <label for="newPassword">New Password:</label><br>
-            <input type="password" id="newPassword" name="newPassword" required><br><br>
+            <!-- Change Password Section -->
+            <section id="change-password">
+                <h2>Change Password</h2>
+                <form id="passwordForm" th:action="@{/user/settings/password}" method="post">
+                    <label for="currentPassword">Current Password:</label><br>
+                    <input type="password" id="currentPassword" name="currentPassword" required><br><br>
 
-            <label for="confirmPassword">Confirm New Password:</label><br>
-            <input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
+                    <label for="newPassword">New Password:</label><br>
+                    <input type="password" id="newPassword" name="newPassword" required><br><br>
 
-            <button type="submit">Change Password</button>
-        </form>
-    </section>
+                    <label for="confirmPassword">Confirm New Password:</label><br>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
 
-    <!-- Notification Preferences Section -->
-    <section id="notification-preferences">
-        <h2>Notification Preferences</h2>
-        <form id="notificationForm" action="/user/settings/notifications" method="post">
-            <label>
-                <input type="checkbox" name="emailNotifications" checked>
-                Email Notifications
-            </label><br><br>
+                    <button type="submit">Change Password</button>
+                </form>
+            </section>
 
-            <label>
-                <input type="checkbox" name="smsNotifications">
-                SMS Notifications
-            </label><br><br>
+            <!-- Notification Preferences Section -->
+            <section id="notification-preferences">
+                <h2>Notification Preferences</h2>
+                <form id="notificationForm" th:action="@{/user/settings/notifications}" method="post">
+                    <label>
+                        <input type="checkbox" name="emailNotifications" checked>
+                        Email Notifications
+                    </label><br><br>
 
-            <label>
-                <input type="checkbox" name="pushNotifications" checked>
-                Push Notifications
-            </label><br><br>
+                    <label>
+                        <input type="checkbox" name="pushNotifications" checked>
+                        Push Notifications
+                    </label><br><br>
 
-            <button type="submit">Save Preferences</button>
-        </form>
-    </section>
+                    <button type="submit">Save Preferences</button>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <div class="contact">
+            <h3><i class="fas fa-phone"></i> Contact us:</h3>
+            <h3> Phone: +27 793 947 502</h3>
+            <h3><i class="far fa-envelope"></i> Email: bookunity@library.co.za</h3>
+        </div>
+        <div class="address">
+            <h3><i class="fas fa-map-marker-alt"></i> Address:</h3>
+            <h3>97 Durham Ave, Salt River</h3>
+            <h3>Cape Town 7925</h3>
+        </div>
+        <div class="opening">
+            <h3><i class="far fa-clock"></i> Opening Hours:</h3>
+            <h3>Mon-Fri: 9am-5pm</h3>
+            <h3>Public Holidays & weekends: Closed</h3>
+        </div>
+    </footer>
 </div>
-<footer>
-    <div class="contact">
-        <h3><i class="fas fa-phone"></i> Contact us:</h3>
-        <h3> Phone: +27 793 947 502</h3>
-        <h3><i class="far fa-envelope"></i> Email: bookunity@library.co.za</h3>
-    </div>
-    <div class="address">
-        <h3><i class="fas fa-map-marker-alt"></i> Address:</h3>
-        <h3>97 Durham Ave, Salt River</h3>
-        <h3>Cape Town 7925</h3>
-    </div>
-    <div class="opening">
-        <h3><i class="far fa-clock"></i> Opening Hours:</h3>
-        <h3>Mon-Fri: 9am-5pm</h3>
-        <h3>Public Holidays & weekends: Closed</h3>
-    </div>
-</footer>
+
 </body>
 </html>

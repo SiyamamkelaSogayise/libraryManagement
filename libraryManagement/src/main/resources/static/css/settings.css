@@ -1,0 +1,25 @@
+body {
+           font-family: Arial, sans-serif;
+       }
+       .borrowBook {
+           width: 50%;
+           margin: 0 auto;
+           padding: 20px;
+           border: 1px solid #ccc;
+           border-radius: 8px;
+       }
+       .borrowBook h2 {
+           text-align: center;
+       }
+       .borrowBook div {
+           display: grid;
+           grid-template-columns: 1fr 2fr;
+           gap: 10px;
+           margin: 10px 0;
+       }
+       .borrowBook span {
+           font-weight: bold;
+       }
+       .line {
+           background-color: #100;
+           height: 1px;

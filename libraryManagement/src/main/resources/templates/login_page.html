@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,84 +7,151 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
     body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
     }
     .login-container {
-        width: 300px;
-        margin: 100px auto;
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      margin: 100px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     .login-container h2 {
-        text-align: center;
-        margin-bottom: 20px;
+      text-align: center;
+      margin-bottom: 20px;
     }
     .login-container input[type="text"],
+    .login-container input[type="email"],
     .login-container input[type="password"] {
-        width: calc(100% - 20px);
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
     }
     .login-container input[type="submit"] {
-        width: 100%;
-        padding: 10px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 3px;
-        cursor: pointer;
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
     }
     .login-container input[type="submit"]:hover {
-        background-color: #0056b3;
+      background-color: #0056b3;
     }
     .forgot-password {
-        text-align: center;
-        margin-bottom: 10px;
+      text-align: center;
+      margin-bottom: 10px;
     }
     .social-icons {
-        text-align: center;
+      text-align: center;
     }
     .social-icons a {
-        margin-right: 10px;
+      margin-right: 10px;
     }
     .social-icons a:last-child {
-        margin-right: 0;
+      margin-right: 0;
     }
     .password-container {
-        position: relative;
+      position: relative;
     }
     #toggle-password {
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%);
-        cursor: pointer;
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
     }
     #toggle-password:hover {
-        color: blue;
+      color: blue;
     }
     .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            display: none; /* Initially hidden */
-        }
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      display: none; /* Initially hidden */
+    }
 
-        .alert-success {
-            color: #155724;
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-        }
+    .alert-success {
+      color: #155724;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1000; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 5px;
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      top: 0;
+      right: 10px;
+      font-size: 30px;
+      font-weight: bold;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Popup styles */
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      z-index: 1000;
+      display: none;
+    }
+
+    .popup-content {
+      text-align: center;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -92,8 +159,7 @@
 <div class="login-container">
   <h2>Login</h2>
   <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
-  <form  method="post" action="/login" th:object="${loginRequest}">
-    <div class="password-container">
+  <form method="post" action="/login" th:object="${loginRequest}">
     <input type="email" name="emailAddress" placeholder="EmailAddress" required>
 
     <div class="password-container">
@@ -104,40 +170,117 @@
     <input type="submit" value="Login">
   </form>
   <div class="forgot-password">
-    <a href="#">Forgot Password?</a>
+    <a href="#" id="forgot-password-link">Forgot Password?</a>
   </div>
   <div class="social-icons">
     <a href="#"><i class="fab fa-facebook"></i></a>
     <a href="#"><i class="fab fa-twitter"></i></a>
     <a href="#"><i class="fab fa-instagram"></i></a>
   </div>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgot-password-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Forgot Password</h2>
+      <form id="forgot-password-form">
+        <input type="email" name="forgotEmail" placeholder="Email Address" required>
+        <input type="text" name="idNumber" placeholder="ID Number" required>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+  </div>
+
+  <!-- Popup for password reset success -->
+  <div id="password-reset-popup" class="popup">
+    <div class="popup-content">
+      <span class="popup-close">&times;</span>
+      <p>Password reset email sent. Please check your email.</p>
+    </div>
+  </div>
+
 </div>
 
 <script>
   document.getElementById('toggle-password').addEventListener('click', function() {
-      var passwordInput = document.getElementById('password-input');
-      if (passwordInput.type === 'password') {
-          passwordInput.type = 'text';
-          this.classList.remove('fa-eye-slash');
-          this.classList.add('fa-eye');
-      } else {
-          passwordInput.type = 'password';
-          this.classList.remove('fa-eye');
-          this.classList.add('fa-eye-slash');
-      }
+    var passwordInput = document.getElementById('password-input');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      this.classList.remove('fa-eye-slash');
+      this.classList.add('fa-eye');
+    } else {
+      passwordInput.type = 'password';
+      this.classList.remove('fa-eye');
+      this.classList.add('fa-eye-slash');
+    }
   });
-</script>
-<script>
+
   // JavaScript to show and hide the pop-up message
   document.addEventListener('DOMContentLoaded', function () {
-      var alert = document.querySelector('.alert');
-      if (alert) {
-          alert.style.display = 'block'; // Show the alert
-          setTimeout(function () {
-              alert.style.display = 'none'; // Hide the alert after 5 seconds
-          }, 5000); // 5000 milliseconds = 5 seconds
+    var alert = document.querySelector('.alert');
+    if (alert) {
+      alert.style.display = 'block'; // Show the alert
+      setTimeout(function () {
+        alert.style.display = 'none'; // Hide the alert after 5 seconds
+      }, 5000); // 5000 milliseconds = 5 seconds
+    }
+  });
+
+  var modal = document.getElementById('forgot-password-modal');
+  var btn = document.getElementById('forgot-password-link');
+  var span = document.getElementsByClassName('close')[0];
+  var popup = document.getElementById('password-reset-popup');
+  var popupClose = document.querySelector('.popup-close');
+
+  btn.onclick = function(event) {
+    event.preventDefault(); // Prevent default link behavior
+    modal.style.display = 'block'; // Display the modal
+  }
+
+  span.onclick = function() {
+    modal.style.display = 'none'; // Close the modal when clicking on the close button
+  }
+
+  popupClose.onclick = function() {
+    popup.style.display = 'none'; // Close the popup for password reset success
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = 'none'; // Close the modal if clicking outside of it
+    }
+  }
+
+  // Handle forgot password form submission
+  document.getElementById('forgot-password-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+
+    fetch('/forgot-password', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        popup.style.display = 'block'; // Show success popup
+      } else {
+        document.getElementById('password-reset-alert').innerText = 'Failed to send password reset email. Please try again later.';
+        document.getElementById('password-reset-alert').style.display = 'block';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      document.getElementById('password-reset-alert').innerText = 'An error occurred. Please try again later.';
+      document.getElementById('password-reset-alert').style.display = 'block';
+    });
   });
 </script>
+
 </body>
 </html>
