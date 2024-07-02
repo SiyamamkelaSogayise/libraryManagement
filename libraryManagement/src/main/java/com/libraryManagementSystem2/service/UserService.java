@@ -4,7 +4,7 @@ import com.libraryManagementSystem2.model.Book;
 import com.libraryManagementSystem2.repository.BookRepository;
 import com.libraryManagementSystem2.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,10 +22,15 @@ public class UserService {
     @Autowired
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private final EmailService emailService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, BookRepository bookRepository){
+    public UserService(UserRepository userRepository, BookRepository bookRepository, EmailService emailService, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
+        this.emailService = emailService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Book> getAllBooks() {
@@ -43,10 +48,21 @@ public class UserService {
     }
 
 
+
+    // Method for handling forgot password functionality
     public User findByEmail(String email) {
         return userRepository.findByEmailAddress(email);
     }
 
+    public boolean sendPasswordResetEmail(String email, long idNumber) {
+        User user = findByEmail(email);
+        if (user != null && Long.valueOf(idNumber).equals(user.getIdNumber())) {
+            // Send the password reset email
+            emailService.sendPasswordResetEmail(user);
+            return true;
+        }
+        return false;
+    }
 
     public User registerNewUser(String name, long idNumber, LocalDate dateOfBirth, String address, String phoneNumber, String emailAddress, String username, String password, String confirmPassword, String role) {
         // Validate input parameters
@@ -83,7 +99,13 @@ public class UserService {
 
 
         try {
-            return userRepository.save(user);
+            User savedUser = userRepository.save(user);
+
+            // Send library card via email
+            emailService.sendLibraryCard(savedUser);
+
+            return savedUser;
+
         } catch (Exception e) {
             e.printStackTrace();
             return null; // Handle any unexpected exceptions during save
@@ -153,4 +175,8 @@ public User authenticate(String emailAddress, String password) {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
+
+
+
 }

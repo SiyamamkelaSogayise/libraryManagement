@@ -4,7 +4,9 @@ import com.libraryManagementSystem2.model.Book;
 import com.libraryManagementSystem2.model.User;
 import com.libraryManagementSystem2.service.BookService;
 import com.libraryManagementSystem2.service.UserService;
+import org.springframework.validation.BindingResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 
 @Controller
@@ -40,6 +44,27 @@ public class UserController {
         model.addAttribute("loginRequest", new User());
         return "login_page";
     }
+
+    @GetMapping("/help")
+    public String getHelpPage() {
+        return "help_page"; // Return the name of the HTML template for the help page
+    }
+
+    @PostMapping("/help")
+    public String help_page() {
+        return "help_page";
+    }
+
+    @GetMapping("/history")
+    public String getBookHistory() {
+        return "bookHistory"; // Return the name of the HTML template for the book history page
+    }
+
+    @PostMapping("/history")
+    public String bookHistory() {
+        return "bookHistory";
+    }
+
 
     @PostMapping("/register")
     public String register(@ModelAttribute User user, @RequestParam("role") String role, Model model, RedirectAttributes redirectAttributes) {
@@ -126,13 +151,13 @@ public class UserController {
         model.addAttribute("books", books);
         return "userPortal";
     }
-    @GetMapping("/userPortal/user")
+    /*@GetMapping("/userPortal/user")
     public String userPortal(Model model, Principal principal) {
         String userEmail = principal.getName(); // Assuming principal.getName() gives the user's email
         User user = userService.findByEmail(userEmail); // Fetch user object from service based on email
         model.addAttribute("user", user); // Add user object to the model
         return "userPortal"; // Return the Thymeleaf template name
-    }
+    }*/
 
     @GetMapping("/admin/dashboard/managers")
     public String listUsers(Model model) {
@@ -153,6 +178,28 @@ public class UserController {
 
         return "userPortal";
     }
+
+    // Forgot Password Mappings
+    @GetMapping("/forgot-password")
+    public String getForgotPasswordForm() {
+        return "forgot_password_page"; // Return the name of the HTML template for the forgot password page
+    }
+
+    @PostMapping("/forgot-password")
+    @ResponseBody
+    public Map<String, Object> handleForgotPassword(@RequestParam String forgotEmail, @RequestParam long idNumber) {
+        Map<String, Object> response = new HashMap<>();
+        boolean sent = userService.sendPasswordResetEmail(forgotEmail, idNumber);
+        response.put("sent", sent);
+        if (sent) {
+            response.put("message", "Password reset email sent.");
+        } else {
+            response.put("message", "Email and ID number do not match or user not found.");
+        }
+        return response; // Return JSON response
+    }
+
+
 
 
 
