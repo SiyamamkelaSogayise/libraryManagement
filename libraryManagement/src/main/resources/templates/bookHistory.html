@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="eng" xmlns:th="http://www.w3.org/1999/xhtml"><!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -28,10 +27,12 @@
             display: flex;
             font-family: Arial, sans-serif;
         }
+
         body a {
             color: black;
             text-decoration: none; /* Optional: Remove underline */
         }
+
         body a:hover {
             color: darkviolet; /* Optional: Change color on hover */
         }
@@ -45,7 +46,7 @@
             width: 110px;
             height: 100vh;
             padding: 0 1.9rem;
-            color: #black;
+            color: black;
             overflow: hidden;
             transition: all 0.5s linear;
             background: rgba(113, 99, 186, 255);
@@ -81,7 +82,7 @@
         }
 
         a {
-            color: #black;
+            color: black;
             font-size: 14px;
             text-decoration: none;
             display: flex;
@@ -135,6 +136,25 @@
             background-color: #f9f9f9;
         }
 
+        .return-btn {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .return-btn:hover {
+            background-color: #45a049; /* Darker Green */
+        }
+
     </style>
 </head>
 
@@ -181,13 +201,19 @@
             <th>Book Title</th>
             <th>Borrowed Date</th>
             <th>Due Date</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="book : ${books}">
             <td th:text="${book.title}"></td>
-            <td th:text="${book.borrowedDate}"></td>
-            <td th:text="${book.dueDate}"></td>
+            <td th:text="${#dates.format(book.borrowedDate, 'yyyy-MM-dd')}"></td>
+            <td th:text="${#dates.format(book.dueDate, 'yyyy-MM-dd')}"></td>
+            <td>
+                <form th:action="@{'/return/' + ${book.id}}" method="post">
+                    <button type="submit" class="return-btn">Return</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
@@ -196,5 +222,4 @@
 
 </body>
 
-</html>
 </html>

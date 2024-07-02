@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Library</title>
     <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <style>
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
 </head>
 <body>
 
@@ -13,12 +24,10 @@
         <img src="Library.png" alt="Library.png" class="logo" style="width: 100px; height: auto;">
         <span class="library-name">System Library</span>
     </div>
-    <a href="#" th:href="@{/manageUsers}">Manage Users</a>
-    <a href="#" th:href="@{/admin/books/add}">Add a book</a>
-    <a href="#" th:href="@{/list}" class="active">List of Books</a>
-    <a href="#" th:href="@{/issueBook}">Issue Book</a>
-    <a href="#" th:href="@{/listIssuedBooks}">List Issued Books</a>
-    <a href="#" th:href="@{/returnBooksToday}">Books to be Returned Today</a>
+    <a href="/admin/">Manage Users</a>
+    <a href="#" onclick="openPage('addBook')">Add a book</a>
+    <a href="/admin/books/list">Available Books</a>
+    <a href="/logout">Logout</a>
 </div>
 
 <div class="main-content">
@@ -30,49 +39,89 @@
                 <button type="submit" class="form-button">Search</button>
             </div>
         </form>
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
 
-    <table class="results-table" id="resultsTable">
-        <thead>
-        <tr>
-            <th>ISBN</th>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Author</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="book : ${books}">
-            <td th:text="${book.isbn}">ISBN</td>
-            <td th:text="${book.title}">Title</td>
-            <td th:text="${book.category}">Category</td>
-            <td th:text="${book.author}">Author</td>
-            <td th:text="${book.quantity}">Quantity</td>
-            <td>
-                <button type="button" onclick="editBook('${book.isbn}')">Edit</button>
-                <button type="button" onclick="deleteBook('${book.isbn}')">Delete</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+        <table class="results-table" id="resultsTable">
+            <thead>
+            <tr>
+                <th>ISBN</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Author</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}">
+                <td th:text="${book.isbn}">ISBN</td>
+                <td th:text="${book.title}">Title</td>
+                <td th:text="${book.category}">Category</td>
+                <td th:text="${book.author}">Author</td>
+                <td th:text="${book.quantity}">Quantity</td>
+                <td>
+                    <a th:href="@{/admin/books/edit/{title}(title=${book.title})}" class="btn btn-primary">Edit</a>
+                    <form th:action="@{/admin/books/delete/{title}(title=${book.title})}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this book?');">Delete</button>
+                    </form>
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Borrowed Books Section -->
+        <h2>List of Borrowed Books</h2>
+
+        <table class="results-table" id="borrowedBooksTable">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Quantity</th>
+                <th>Borrowed By</th>
+                <th>Borrowed Date</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="borrowedBook : ${books}" th:if="${borrowedBook.borrowed}">
+                <td th:text="${borrowedBook.title}">Title</td>
+                <td th:text="${borrowedBook.author}">Author</td>
+                <td th:text="${borrowedBook.quantity}">Quantity</td>
+                <td th:text="${borrowedBook.borrowedBy.name}">Borrowed By</td>
+                <td th:text="${borrowedBook.borrowedDate}">Borrowed Date</td>
+                <td th:text="${borrowedBook.dueDate}">Due Date</td>
+                <td>
+                    <button type="button" th:onclick="'returnBook(' + ${borrowedBook.id} + ')'">Return</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-    <script>
-        function editBook(isbn) {
-        // Redirect to edit book page or handle editing via backend API
-        window.location.href = '/edit/' + isbn; // Example: Replace with your actual edit book endpoint
+
+<script>
+    function editBook(isbn) {
+        window.location.href = '/admin/books/edit/' + isbn;
     }
 
-    function deleteBook(isbn) {
-        if (confirm("Are you sure you want to delete the book with ISBN: " + isbn + "?")) {
-            fetch('/deleteBook/' + isbn, {
-                method: 'DELETE'
+     function deleteBook(title) {
+        if (confirm("Are you sure you want to delete the book with Title: " + title + "?")) {
+            fetch('/admin/books/delete/' + title, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-HTTP-Method-Override': 'DELETE'
+                }
             })
             .then(response => {
                 if (response.ok) {
                     alert("Book deleted successfully.");
-                    // Optional: Refresh the book list or redirect to list page
-                    window.location.reload(); // Example: Refresh the page after deletion
+                    showSuccessMessage("Book deleted successfully."); // Show success message
+                    window.location.reload();
                 } else {
                     throw new Error('Failed to delete book.');
                 }
@@ -83,35 +132,50 @@
         }
     }
 
-
-        function searchBooks() {
-        var input = document.getElementById("searchBox");
-        var filter = input.value.toLowerCase();
-        var table = document.getElementById("resultsTable");
-        var tr = table.getElementsByTagName("tr");
-
-        for (var i = 1; i < tr.length; i++) {
-            tr[i].classList.remove("highlight");
-            var td = tr[i].getElementsByTagName("td");
-            var matched = false;
-            for (var j = 0; j < td.length; j++) {
-                if (td[j]) {
-                    if (td[j].innerText.toLowerCase().indexOf(filter) > -1) {
-                        matched = true;
-                    }
+    function returnBook(bookId) {
+        if (confirm("Are you sure you want to return this book?")) {
+            fetch('/admin/books/return/' + bookId, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Book Returned Successfully');
                 }
-            }
-            if (matched) {
-                tr[i].style.display = "";
-                tr[i].classList.add("highlight");
-            } else {
-                tr[i].style.display = "none";
-            }
+            })
+            .then(message => {
+                alert(message);
+                window.location.reload(); // Refresh the page after returning the book
+            })
+            .catch(error => {
+                alert(error.message);
+            });
         }
     }
-});
 
-    </script>
+    function showSuccessMessage(message) {
+        var alertBox = document.createElement('div');
+        alertBox.classList.add('alert', 'alert-success');
+        alertBox.textContent = message;
+        document.body.appendChild(alertBox);
+
+        setTimeout(function() {
+            alertBox.style.display = 'none';
+        }, 5000); // 5000 milliseconds = 5 seconds
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var alert = document.querySelector('.alert');
+        if (alert) {
+            alert.style.display = 'block'; // Show the alert
+            setTimeout(function () {
+                alert.style.display = 'none'; // Hide the alert after 5 seconds
+            }, 5000); // 5000 milliseconds = 5 seconds
+        }
+    });
+
+</script>
 
 </body>
 </html>

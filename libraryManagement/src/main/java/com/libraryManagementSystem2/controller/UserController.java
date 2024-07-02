@@ -4,8 +4,8 @@ import com.libraryManagementSystem2.model.Book;
 import com.libraryManagementSystem2.model.User;
 import com.libraryManagementSystem2.service.BookService;
 import com.libraryManagementSystem2.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -52,32 +52,38 @@ public class UserController {
         return "help_page";
     }
 
+
+
     @GetMapping("/history")
+    public String getBookHistory(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("loggedUser");
+
+
+
+        List<Book> borrowedBooks = bookService.getBooksBorrowedByUser(user);
+
+
+        model.addAttribute("books", borrowedBooks);
+        return "bookHistory"; // Return the name of the HTML template for the book history page
+    }
+
+
+
+
+    @PostMapping("/history")
     public String getBookHistory() {
         return "bookHistory"; // Return the name of the HTML template for the book history page
     }
 
-    @PostMapping("/history")
-    public String bookHistory() {
-        return "bookHistory";
-    }
-
     @GetMapping("/settings")
-    public String getSettings(Model model, @AuthenticationPrincipal Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        String emailAddress = principal.getName();
-        User user = userService.findByEmail(emailAddress);
-        model.addAttribute("user", user);
-        return "settings";
+    public String getSettings() {
+        return "settings"; // Return the name of the HTML template for the settings page
     }
 
     @PostMapping("/settings")
     public String settings() {
         return "settings";
     }
-
 
     @PostMapping("/register")
     public String register(@ModelAttribute User user, @RequestParam("role") String role, Model model, RedirectAttributes redirectAttributes) {
@@ -101,7 +107,7 @@ public class UserController {
             model.addAttribute("books", books);
 
             redirectAttributes.addFlashAttribute("message", "Successfully registered. Please log in.");
-            return "redirect:/login";
+            return "redirect:/userPortal";
         }
     }
 
@@ -164,20 +170,14 @@ public class UserController {
         model.addAttribute("books", books);
         return "userPortal";
     }
-    /*@GetMapping("/userPortal/user")
+    @GetMapping("/userPortal/user")
     public String userPortal(Model model, Principal principal) {
         String userEmail = principal.getName(); // Assuming principal.getName() gives the user's email
         User user = userService.findByEmail(userEmail); // Fetch user object from service based on email
         model.addAttribute("user", user); // Add user object to the model
         return "userPortal"; // Return the Thymeleaf template name
-    }*/
-
-    @GetMapping("/admin/dashboard/managers")
-    public String listUsers(Model model) {
-        List<User> users = userService.getAllUsers();
-        model.addAttribute("users", users);
-        return "manage_users"; // Ensure you have an HTML template named "manage_users.html"
     }
+
 
     @GetMapping("/currentUser")
     public String currentUser(Model model) {
@@ -208,28 +208,29 @@ public class UserController {
         }
         return "redirect:/login";
     }
-
-    @PostMapping("/user/settings/profile")
-    public String updateProfile(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) {
-
-        // Ensure user object is not null and contains necessary fields
-        if (user == null || user.getIdNumber() == 0 || user.getUsername() == null || user.getEmailAddress() == null || user.getPhoneNumber() == null) {
-            redirectAttributes.addFlashAttribute("message", "Invalid user information provided.");
-            return "redirect:/settings";
-        }
-
-        // Perform profile update
-        boolean success = userService.updateUserProfile(user.getIdNumber(), user.getUsername(), user.getEmailAddress(), user.getPhoneNumber());
-
-        // Handle success or failure
-        if (success) {
-            redirectAttributes.addFlashAttribute("message", "Profile updated successfully.");
-        } else {
-            redirectAttributes.addFlashAttribute("message", "Failed to update profile. Please try again.");
-        }
-
-        return "redirect:/settings";
+    @GetMapping("/admin/users")
+    public String listUsers(Model model) {
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "manage_users"; // Ensure you have an HTML template named "manage_users.html"
     }
+
+
+    @PostMapping("/admin/users/add")
+    public String addUser(@ModelAttribute User user, Model model,@RequestParam("role")String role, RedirectAttributes redirectAttributes) {
+        // Add validation if needed
+        User newUser = userService.registerNewUser(user.getName(), user.getIdNumber(), user.getDateOfBirth(), user.getAddress(), user.getPhoneNumber(), user.getEmailAddress(), user.getUsername(), user.getPassword(), user.getConfirmPassword(), role);
+        if (newUser == null) {
+            // Handle registration failure
+            return "error_page";
+        } else {
+            redirectAttributes.addFlashAttribute("message", "User added successfully.");
+            return "redirect:/admin/users";
+        }
+    }
+
+
+
 
 
 

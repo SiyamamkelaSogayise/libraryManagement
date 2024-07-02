@@ -2,6 +2,7 @@ package com.libraryManagementSystem2.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -20,8 +21,39 @@ public class Book {
     private boolean borrowed;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User borrowedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "borrowed_by")
+    private User borrowedByUser;
+
+    public User getBorrowedByUser() {
+        return borrowedByUser;
+    }
+
+    public void setBorrowedByUser(User borrowedByUser) {
+        this.borrowedByUser = borrowedByUser;
+    }
+
+    private LocalDate borrowedDate; // Add this field
+    private LocalDate dueDate; // Add this field
+
+    public LocalDate getBorrowedDate() {
+        return borrowedDate;
+    }
+
+    public void setBorrowedDate(LocalDate borrowedDate) {
+        this.borrowedDate = borrowedDate;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
 
     public boolean isBorrowed() {
         return borrowed;

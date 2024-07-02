@@ -3,15 +3,20 @@ package com.libraryManagementSystem2.controller;
 import com.libraryManagementSystem2.model.Book;
 import com.libraryManagementSystem2.model.User;
 import com.libraryManagementSystem2.service.BookService;
+import com.libraryManagementSystem2.service.EmailService;
 import com.libraryManagementSystem2.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin/books")
@@ -19,13 +24,15 @@ public class BookController {
 
     private final BookService bookService;
     private final UserService userService;
+    private final EmailService emailService;
 
 
     @Autowired
-    public BookController(BookService bookService, UserService userService) {
+    public BookController(BookService bookService, UserService userService, EmailService emailService) {
         this.bookService = bookService;
 
         this.userService = userService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/add")
@@ -60,48 +67,113 @@ public class BookController {
         return "list_books"; // Thymeleaf template name
     }
 
-    @GetMapping("/edit/{isbn}")
-    public String getEditBookForm(@PathVariable String isbn, Model model) {
-        Book book = bookService.getBookByIsbn(isbn); // Implement this method in BookService
+    @GetMapping("/edit/{title}")
+    public String getEditBookForm(@PathVariable String title, Model model) {
+        Book book = bookService.getBookByTitle(title); // Use title instead of ISBN
         model.addAttribute("book", book);
         return "edit_book_form"; // Ensure you have an HTML template named "edit_book_form.html"
     }
 
-    @PostMapping("/edit")
-    public String editBook(@ModelAttribute Book updatedBook) {
-        bookService.updateBook(updatedBook); // Implement this method in BookService
-        return "redirect:/admin/books/list"; // Redirect to list of books after editing
+
+    @GetMapping("/{bookId}/borrow")
+    public String showBorrowBookPage(@PathVariable Integer bookId, Model model) {
+        Optional<Book> book = bookService.getBookById(bookId);
+        if (book.isPresent()) {
+            model.addAttribute("book", book.get());
+            return "borrow";
+        } else {
+            return "redirect:/admin/books/list"; // Redirect if the book does not exist
+        }
     }
 
-    /*@PostMapping("/{bookId}/borrow")
-    public String borrowBook(@PathVariable("bookId") Integer bookId, Principal principal, Model model) {
-        String username = principal.getUsername(); // Get logged-in username
-        User user = userService.findByUsername(username);
+    @PostMapping("/borrow")
+    public String borrowBook(@RequestParam Integer bookId, @RequestParam String emailAddress, @RequestParam String name, RedirectAttributes redirectAttributes) {
+        Optional<Book> bookOptional = bookService.getBookById(bookId);
+        Optional<User> userOptional = userService.getUserByEmailAddressWithSomeParameters(emailAddress, name);
 
-        if (user != null) {
-            Book borrowedBook = bookService.borrowBook(bookId, user.getId()); // Adjust this according to your service method
-            if (borrowedBook != null) {
-                model.addAttribute("message", "Book borrowed successfully!");
+        if (bookOptional.isPresent() && userOptional.isPresent()) {
+            Book book = bookOptional.get();
+            User user = userOptional.get();
+
+            if (book.getQuantity() > 0) {
+                // Set borrowedBy and borrowedDate
+                book.setBorrowedBy(user);
+                book.setBorrowed(true);
+                book.setBorrowedDate(LocalDate.now()); // Capture current date as borrowedDate
+                // Calculate dueDate (borrowedDate + 14 days)
+                LocalDate dueDate = LocalDate.now().plusDays(14);
+                book.setDueDate(dueDate);
+
+                bookService.borrowBook(book, user);
+
+                // Send confirmation email to user
+                emailService.sendBorrowConfirmation(user.getEmailAddress(), book, user.getName());
+
+                redirectAttributes.addFlashAttribute("message", "Book borrowed successfully!");
+                return "redirect:/userPortal";
             } else {
-                model.addAttribute("message", "Failed to borrow the book. Please try again.");
+                redirectAttributes.addFlashAttribute("message", "Book is currently unavailable.");
+                return "redirect:/admin/books/" + bookId + "/borrow";
             }
         } else {
-            model.addAttribute("message", "User not found. Please log in again.");
+            redirectAttributes.addFlashAttribute("message", "User email does not exist.");
+            return "redirect:/admin/books/" + bookId + "/borrow";
         }
+    }
 
-        return "redirect:/user/portal"; // Redirect to the user portal page or another appropriate page
-    }*/
+    @GetMapping("/borrowedBooks")
+    public String listBorrowedBooks(Model model) {
+        List<Book> borrowedBooks = bookService.getBorrowedBooks();
+        model.addAttribute("borrowedBooks", borrowedBooks);
+        return "issuedBooks"; // Create an HTML template named "borrowed_books.html"
+    }
 
 
+    @PostMapping("/return/{bookId}")
+    public String returnBook(@PathVariable Integer bookId, RedirectAttributes redirectAttributes) {
+        Optional<Book> bookOptional = bookService.getBookById(bookId);
 
-    @PostMapping("/{bookId}/return")
-    public ResponseEntity<Book> returnBook(@PathVariable Integer bookId) {
-        Book returnedBook = bookService.returnBook(bookId);
-        if (returnedBook != null) {
-            return ResponseEntity.ok(returnedBook);
+        if (bookOptional.isPresent()) {
+            Book book = bookOptional.get();
+
+            if (book.isBorrowed()) {
+                // Perform return operations
+                bookService.returnBook(bookId);
+
+                // Additional operations (e.g., sending return confirmation email)
+                // emailService.sendReturnConfirmation(book.getBorrowedBy().getEmailAddress(), book);
+
+                redirectAttributes.addFlashAttribute("message", "Book returned successfully!");
+            } else {
+                redirectAttributes.addFlashAttribute("message", "Book is not currently borrowed.");
+            }
         } else {
-            return ResponseEntity.badRequest().build();
+            redirectAttributes.addFlashAttribute("message", "Book not found.");
         }
+
+        return "redirect:/admin/books/borrowBooks";
+    }
+
+
+    @PostMapping("/update")
+    public String updateBook(@ModelAttribute("book") Book book, Model model) {
+        Book updatedBook = bookService.updateBook(book);
+        if (updatedBook == null) {
+            model.addAttribute("error", "Book not found or invalid update.");
+            return "edit_book_form";
+        }
+        return "redirect:/admin/books/list";
+    }
+
+    @PostMapping("/delete/{title}")
+    public String deleteBook(@PathVariable String title, RedirectAttributes redirectAttributes) {
+        boolean isDeleted = bookService.deleteBookByTitle(title);
+        if (!isDeleted) {
+            redirectAttributes.addFlashAttribute("error", "Book not found or could not be deleted.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Book deleted successfully.");
+        }
+        return "redirect:/admin/books/list";
     }
 
 

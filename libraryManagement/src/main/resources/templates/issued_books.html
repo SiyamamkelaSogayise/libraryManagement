@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Library - List of Borrowed Books</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+
+<div class="sidenav" id="sidenav">
+    <div class="sidebar-header">
+        <img src="Library.png" alt="Library.png" class="logo" style="width: 100px; height: auto;">
+        <span class="library-name">System Library</span>
+    </div>
+    <a href="#" th:href="@{/manageUsers}">Manage Users</a>
+    <a href="#" th:href="@{/admin/books/add}">Add a book</a>
+    <a href="#" th:href="@{/list}" class="active">List of Books</a>
+    <a href="#" th:href="@{/issueBook}">Issue Book</a>
+    <a href="#" th:href="@{/listIssuedBooks}">List Issued Books</a>
+    <a href="#" th:href="@{/returnBooksToday}">Books to be Returned Today</a>
+</div>
+
+<div class="main-content">
+    <div class="container">
+        <h2>List of Borrowed Books</h2>
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <table class="results-table" id="resultsTable">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Quantity</th>
+                <th>Borrowed By</th>
+                <th>Borrowed Date</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}" th:if="${book.borrowed}">
+                <td th:text="${book.title}">Title</td>
+                <td th:text="${book.author}">Author</td>
+                <td th:text="${book.quantity}">Quantity</td>
+                <td th:text="${book.borrowedBy.name}">Borrowed By</td>
+                <td th:text="${book.borrowedDate}">Borrowed Date</td>
+                <td th:text="${book.dueDate}">Due Date</td>
+                <td>
+                    <button type="button" th:onclick="'returnBook(' + ${book.id} + ')'">Return</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function returnBook(bookId) {
+            if (confirm("Are you sure you want to return this book?")) {
+                fetch('/admin/books/return/' + bookId, {
+                    method: 'POST'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Book Returned Successfully');
+                    }
+                })
+                .then(message => {
+                    alert(message);
+                    window.location.reload(); // Refresh the page after returning the book
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var alert = document.querySelector('.alert');
+            if (alert) {
+                alert.style.display = 'block'; // Show the alert
+                setTimeout(function () {
+                    alert.style.display = 'none'; // Hide the alert after 5 seconds
+                }, 5000); // 5000 milliseconds = 5 seconds
+            }
+        });
+
+    </script>
+
+</body>
+</html>
