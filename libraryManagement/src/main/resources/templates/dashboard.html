@@ -10,15 +10,15 @@
 
 <div class="sidenav" id="sidenav">
     <div class="sidebar-header">
-        <img src="Library.png" alt="Library.png" class="logo" style="width: 100px; height: auto;">
-        <span class="library-name">System Library</span>
+       <!-- <img src="Library.png" alt="Library.png" class="logo" style="width: 100px; height: auto;">-->
+        <span class="library-name"> Library Management System</span>
     </div>
-    <a href="/admin/">Manage Users</a>
+    <a href="/admin/users">
+        <i class="fas fa-users"></i> <span>Manage Users</span>
+    </a>
     <a href="#" onclick="openPage('addBook')">Add a book</a>
-    <a href="/admin/books/list">List of Books</a>
-    <a href="#" onclick="openPage('issueBook')">Issue Book</a>
-    <a href="#" onclick="openPage('listIssuedBooks')">List Issued Books</a>
-    <a href="#" onclick="openPage('returnBooksToday')">Books to be Returned Today</a>
+    <a href="/admin/books/list"> Available Books</a>
+    <a href="/logout">Logout</a>
 </div>
 
 <div class="main-content" id="main-content">

@@ -50,12 +50,12 @@ public class UserService {
 
 
     // Method for handling forgot password functionality
-    public User findByEmail(String email) {
-        return userRepository.findByEmailAddress(email);
+    public User findByEmail(String emailAddress) {
+        return userRepository.findByEmailAddress(emailAddress);
     }
 
-    public boolean sendPasswordResetEmail(String email, long idNumber) {
-        User user = findByEmail(email);
+    public boolean sendPasswordResetEmail(String emailAddress, long idNumber) {
+        User user = findByEmail(emailAddress);
         if (user != null && Long.valueOf(idNumber).equals(user.getIdNumber())) {
             // Send the password reset email
             emailService.sendPasswordResetEmail(user);
@@ -175,6 +175,14 @@ public User authenticate(String emailAddress, String password) {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
+
+
+
+    public Optional<User> getUserByEmailAddressWithSomeParameters(String emailAddress, String name) {
+        return userRepository.findByEmailAddressAndName(emailAddress, name);
+    }
+
 
 
 
