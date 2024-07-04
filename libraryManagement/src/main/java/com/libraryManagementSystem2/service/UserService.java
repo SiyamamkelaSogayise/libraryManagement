@@ -3,6 +3,7 @@ package com.libraryManagementSystem2.service;
 import com.libraryManagementSystem2.model.Book;
 import com.libraryManagementSystem2.repository.BookRepository;
 import com.libraryManagementSystem2.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
@@ -179,6 +180,61 @@ public User authenticate(String emailAddress, String password) {
         return userRepository.findByEmailAddressAndName(emailAddress, name);
     }
 
+    @Transactional
+    public User updateUser(User updatedUser) {
+        // Perform validations
+        if (updatedUser == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
+
+        // Validate ID
+        Integer updatedUserId = updatedUser.getId();
+        if (updatedUserId == null) {
+            throw new IllegalArgumentException("User ID cannot be null.");
+        }
+
+        // Check if the book exists in the database
+        Optional<User> existingUserOptional = userRepository.findById(updatedUserId);
+        if (existingUserOptional.isEmpty()) {
+            throw new IllegalArgumentException("User with ID " + updatedUserId + " not found.");
+        }
+
+        // Retrieve the existing book
+        User existingUser = existingUserOptional.get();
+
+        // Example logic for updating fields
+        existingUser.setName(updatedUser.getName());
+        existingUser.setAddress(updatedUser.getAddress());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+        existingUser.setEmailAddress(updatedUser.getEmailAddress());
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setPassword(updatedUser.getPassword());
+
+        // Save and return the updated book
+        return userRepository.save(existingUser);
+    }
+    public Optional<User> getUserById(Integer userId) {
+        return userRepository.findById(userId);
+    }
+
+    public boolean deleteBookByTitle(String title) {
+        Optional<Book> optionalBook = bookRepository.findByTitle(title);
+        if (optionalBook.isPresent()) {
+            bookRepository.delete(optionalBook.get());
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public boolean deleteUserById(Integer userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            userRepository.delete(optionalUser.get());
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 

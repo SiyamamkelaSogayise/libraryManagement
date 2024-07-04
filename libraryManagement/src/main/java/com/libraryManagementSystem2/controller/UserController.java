@@ -241,9 +241,51 @@ public class UserController {
         }
     }
 
+    @PostMapping("/updateUser")
+    public String updateBook(@ModelAttribute("user") User user, Model model) {
+        User updatedUser = userService.updateUser(user);
+        if (updatedUser == null) {
+                model.addAttribute("error", "User not found or invalid update.");
+            return "edit_user_form";
+        }
+        return "redirect:/admin/users";
+    }
 
 
+    @GetMapping("/admin/users/edit/{id}")
+    public String showEditUserForm(@PathVariable("id") Integer id, Model model) {
+        User user = userService.findById(id);
+        if (user == null) {
+            model.addAttribute("error", "User not found.");
+            return "redirect:/admin/users";
+        }
+        model.addAttribute("user", user);
+        return "edit_user_form";
+    }
+
+    // Add this method to your UserController
+    @PostMapping("/admin/users/delete/{id}")
+    public String deleteUser(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        boolean isDeleted = userService.deleteUserById(id);
+        if (!isDeleted) {
+            redirectAttributes.addFlashAttribute("error", "User not found or could not be deleted.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "User deleted successfully.");
+        }
+        return "redirect:/admin/users";
+    }
 
 
-
+    @DeleteMapping("/admin/users/delete/{id}")
+    @ResponseBody
+    public Map<String, String> deleteUser(@PathVariable Integer id) {
+        Map<String, String> response = new HashMap<>();
+        boolean isDeleted = userService.deleteUserById(id);
+        if (isDeleted) {
+            response.put("message", "User deleted successfully.");
+        } else {
+            response.put("message", "User not found or could not be deleted.");
+        }
+        return response;
+    }
 }

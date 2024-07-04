@@ -85,9 +85,13 @@
                 <td th:text=${user.emailAddress}>EmailAddress</td>
                 <td th:text=${user.phoneNumber}>Phone Number</td>
                 <td>
-                    <button class="small-button" onclick="editUser(${user.id})">Edit</button>
-                    <button class="small-button" onclick="deleteUser(${user.id})">Delete</button>
+                    <a th:href="@{'/admin/users/edit/' + ${user.id}}" class="btn btn-primary">Edit</a>
+                    <form th:action="@{/admin/users/delete/{id}(id=${user.id})}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
+                    </form>
                 </td>
+
             </tr>
             </tbody>
         </table>
@@ -196,9 +200,19 @@
     }
 
     function deleteUser(userId) {
-        // Implement logic to delete a user
-        alert("Functionality to delete user with ID: " + userId);
+    if (confirm("Are you sure you want to delete this user?")) {
+        axios.delete(`/admin/users/delete/${userId}`)
+            .then(response => {
+                alert(response.data.message);
+                // Reload the user list after deletion
+                loadManageUsers();
+            })
+            .catch(error => {
+                alert("An error occurred while deleting the user.");
+            });
     }
+}
+
 
 
 
