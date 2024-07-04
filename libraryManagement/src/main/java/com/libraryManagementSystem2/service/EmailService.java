@@ -33,7 +33,6 @@ public class EmailService {
         String text = "Dear " + user.getName() + ",\n\n" +
                 "Your password reset request has been received. Please use the following password to log in:\n\n" +
                 "New Password: " + user.getPassword() + "\n\n" +
-                "We recommend that you change your password immediately after logging in.\n\n" +
                 "Regards,\n" +
                 "Library Management System";
 
@@ -117,7 +116,7 @@ public class EmailService {
         // Add user details
         g2d.setFont(new Font("Arial", Font.PLAIN, 14));
         g2d.drawString("Name: " + user.getName(), 40, 80);
-        g2d.drawString("ID: " + user.getIdNumber(), 40, 100);
+        g2d.drawString("Username: " + user.getUsername(), 40, 100);
         g2d.drawString("Library Card Number: " + user.getId(), 40, 120);
 
         // Simulate a barcode

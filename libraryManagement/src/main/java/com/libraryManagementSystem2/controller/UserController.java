@@ -3,6 +3,7 @@ package com.libraryManagementSystem2.controller;
 import com.libraryManagementSystem2.model.Book;
 import com.libraryManagementSystem2.model.User;
 import com.libraryManagementSystem2.service.BookService;
+import com.libraryManagementSystem2.service.EmailService;
 import com.libraryManagementSystem2.service.UserService;
 import org.springframework.validation.BindingResult;
 import jakarta.servlet.http.HttpSession;
@@ -25,12 +26,14 @@ public class UserController {
 
     private final UserService userService;
     private final BookService bookService;
+    private final EmailService emailService;
 
     @Autowired
-    public UserController(UserService userService, BookService bookService) {
+    public UserController(UserService userService, BookService bookService, EmailService emailService) {
         this.userService = userService;
 
         this.bookService = bookService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/register")
@@ -99,7 +102,7 @@ public class UserController {
         }
 
         // Attempt to register new user
-        User registeredUser = userService.registerNewUser(user.getName(), user.getIdNumber(), user.getDateOfBirth(), user.getAddress(), user.getPhoneNumber(), user.getEmailAddress(), user.getUsername(), user.getPassword(), user.getConfirmPassword(), role);
+        User registeredUser = userService.registerNewUser(user.getName(), user.getAddress(), user.getPhoneNumber(), user.getEmailAddress(), user.getUsername(), user.getPassword(), user.getConfirmPassword(), role);
 
         if (registeredUser == null) {
             return "error_page"; // Handle registration failure
@@ -110,7 +113,8 @@ public class UserController {
             // Add books to model attribute
             model.addAttribute("books", books);
 
-            redirectAttributes.addFlashAttribute("message", "Successfully registered. Please log in.");
+
+            redirectAttributes.addFlashAttribute("message", "Successfully registered, you may check your emails for Library card.");
             return "redirect:/userPortal";
         }
     }
@@ -204,14 +208,14 @@ public class UserController {
 
     @PostMapping("/forgot-password")
     @ResponseBody
-    public Map<String, Object> handleForgotPassword(@RequestParam String forgotEmail, @RequestParam long idNumber) {
+    public Map<String, Object> handleForgotPassword(@RequestParam String forgotEmail, @RequestParam String username) {
         Map<String, Object> response = new HashMap<>();
-        boolean sent = userService.sendPasswordResetEmail(forgotEmail, idNumber);
+        boolean sent = userService.sendPasswordResetEmail(forgotEmail, username);
         response.put("sent", sent);
         if (sent) {
             response.put("message", "Password reset email sent.");
         } else {
-            response.put("message", "Email and ID number do not match or user not found.");
+            response.put("message", "Email and username do not match or user not found.");
         }
         return response; // Return JSON response
     }
@@ -227,7 +231,7 @@ public class UserController {
     @PostMapping("/admin/users/add")
     public String addUser(@ModelAttribute User user, Model model,@RequestParam("role")String role, RedirectAttributes redirectAttributes) {
         // Add validation if needed
-        User newUser = userService.registerNewUser(user.getName(), user.getIdNumber(), user.getDateOfBirth(), user.getAddress(), user.getPhoneNumber(), user.getEmailAddress(), user.getUsername(), user.getPassword(), user.getConfirmPassword(), role);
+        User newUser = userService.registerNewUser(user.getName(),user.getAddress(), user.getPhoneNumber(), user.getEmailAddress(), user.getUsername(), user.getPassword(), user.getConfirmPassword(), role);
         if (newUser == null) {
             // Handle registration failure
             return "error_page";

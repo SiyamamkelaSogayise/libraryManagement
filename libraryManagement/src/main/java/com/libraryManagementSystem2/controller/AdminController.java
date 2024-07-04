@@ -40,7 +40,7 @@ public class AdminController {
         }
 
         // Attempt to register new admin
-        User registeredAdmin = userService.registerNewUser(user.getName(), user.getIdNumber(), user.getDateOfBirth(), user.getAddress(), user.getPhoneNumber(), user.getEmailAddress(), user.getUsername(), user.getPassword(), user.getConfirmPassword(), "ADMIN");
+        User registeredAdmin = userService.registerNewUser(user.getName(), user.getAddress(), user.getPhoneNumber(), user.getEmailAddress(), user.getUsername(), user.getPassword(), user.getConfirmPassword(), "ADMIN");
 
         if (registeredAdmin == null) {
             return "error_page"; // Handle registration failure
@@ -88,7 +88,7 @@ public class AdminController {
 
 
         // Call UserService to add a new user
-        User newUser = userService.addUser(name, idNumber, dateOfBirth, address, phoneNumber, emailAddress,
+        User newUser = userService.addUser(name, address, phoneNumber, emailAddress,
                 username, password, confirmPassword, role);
 
         if (newUser != null) {

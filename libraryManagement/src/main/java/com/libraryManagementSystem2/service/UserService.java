@@ -54,9 +54,9 @@ public class UserService {
         return userRepository.findByEmailAddress(emailAddress);
     }
 
-    public boolean sendPasswordResetEmail(String emailAddress, long idNumber) {
+    public boolean sendPasswordResetEmail(String emailAddress, String username) {
         User user = findByEmail(emailAddress);
-        if (user != null && Long.valueOf(idNumber).equals(user.getIdNumber())) {
+        if (user != null && username.equals(user.getUsername())) {
             // Send the password reset email
             emailService.sendPasswordResetEmail(user);
             return true;
@@ -64,10 +64,10 @@ public class UserService {
         return false;
     }
 
-    public User registerNewUser(String name, long idNumber, LocalDate dateOfBirth, String address, String phoneNumber, String emailAddress, String username, String password, String confirmPassword, String role) {
+    public User registerNewUser(String name, String address, String phoneNumber, String emailAddress, String username, String password, String confirmPassword, String role) {
         // Validate input parameters
         if (username == null || password == null || confirmPassword == null ||
-                name == null || address == null || phoneNumber == null || emailAddress == null || dateOfBirth == null) {
+                name == null || address == null || phoneNumber == null || emailAddress == null ) {
             return null; // Return null if any required fields are null
         }
 
@@ -84,8 +84,6 @@ public class UserService {
         // Create a new user object and save to repository
         User user = new User();
         user.setName(name);
-        user.setIdNumber(idNumber);
-        user.setDateOfBirth(dateOfBirth);
         user.setAddress(address);
         user.setPhoneNumber(phoneNumber);
         user.setEmailAddress(emailAddress);
@@ -118,11 +116,11 @@ public class UserService {
 public User authenticate(String emailAddress, String password) {
     return userRepository.findByEmailAddressAndPassword(emailAddress, password).orElse(null);
 }
-    public User addUser(String name, long idNumber, LocalDate dateOfBirth, String address, String phoneNumber,
+    public User addUser(String name, String address, String phoneNumber,
                         String emailAddress, String username, String password, String confirmPassword, String role) {
         // Validate input parameters
         if (username == null || password == null || confirmPassword == null ||
-                name == null || address == null || phoneNumber == null || emailAddress == null || dateOfBirth == null) {
+                name == null || address == null || phoneNumber == null || emailAddress == null) {
             throw new IllegalArgumentException("All fields are required.");
         }
 
@@ -143,8 +141,6 @@ public User authenticate(String emailAddress, String password) {
         // Create a new user object
         User user = new User();
         user.setName(name);
-        user.setIdNumber(idNumber);
-        user.setDateOfBirth(dateOfBirth);
         user.setAddress(address);
         user.setPhoneNumber(phoneNumber);
         user.setEmailAddress(emailAddress);

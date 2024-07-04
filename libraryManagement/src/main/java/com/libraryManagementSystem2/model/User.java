@@ -12,8 +12,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    private long idNumber;
-    private LocalDate dateOfBirth;
+
     private String address;
     private String phoneNumber;
     private String emailAddress;
@@ -44,21 +43,7 @@ public class User {
         this.name = name;
     }
 
-    public long getIdNumber() {
-        return idNumber;
-    }
 
-    public void setIdNumber(long idNumber) {
-        this.idNumber = idNumber;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
 
     public String getAddress() {
         return address;
@@ -125,12 +110,12 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return idNumber == user.idNumber && id == user.id && Objects.equals(name, user.name) && Objects.equals(dateOfBirth, user.dateOfBirth) && Objects.equals(address, user.address) && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(emailAddress, user.emailAddress) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(confirmPassword, user.confirmPassword) && Objects.equals(role, user.role);
+        return id == user.id && Objects.equals(name, user.name) && Objects.equals(address, user.address) && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(emailAddress, user.emailAddress) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(confirmPassword, user.confirmPassword) && Objects.equals(role, user.role) && Objects.equals(borrowedBooks, user.borrowedBooks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, idNumber, dateOfBirth, address, phoneNumber, emailAddress, username, password, confirmPassword, role);
+        return Objects.hash(id, name, address, phoneNumber, emailAddress, username, password, confirmPassword, role);
     }
 
     @Override
@@ -138,8 +123,6 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", idNumber=" + idNumber +
-                ", dateOfBirth=" + dateOfBirth +
                 ", address='" + address + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +

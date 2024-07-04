@@ -75,7 +75,6 @@
                 <th>Name</th>
                 <th>Email Address</th>
                 <th>Phone number</th>
-                <th>Date of Birth</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -85,7 +84,6 @@
                 <td th:text=${user.name}>Name</td>
                 <td th:text=${user.emailAddress}>EmailAddress</td>
                 <td th:text=${user.phoneNumber}>Phone Number</td>
-                <td th:text=${user.DateOfBirth}>Date of Birth</td>
                 <td>
                     <button class="small-button" onclick="editUser(${user.id})">Edit</button>
                     <button class="small-button" onclick="deleteUser(${user.id})">Delete</button>
@@ -101,12 +99,6 @@
         <form id="addUserForm" method="post" action="/admin/users/add">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required><br>
-
-            <label for="idNumber">ID Number:</label>
-            <input type="text" id="idNumber" name="idNumber" required><br>
-
-            <label for="dateOfBirth">Date of Birth:</label>
-            <input type="date" id="dateOfBirth" name="dateOfBirth" required><br>
 
             <label for="address">Address:</label>
             <input type="text" id="address" name="address" required><br>
@@ -178,7 +170,6 @@
                             <td>${user.name}</td>
                             <td>${user.emailAddress}</td>
                             <td>${user.phoneNumber}</td>
-                            <td>${user.dateOfBirth}</td>
                             <td>
                                 <button class="small-button" onclick="editUser(${user.id})">Edit</button>
                                 <button class="small-button" onclick="deleteUser(${user.id})">Delete</button>
