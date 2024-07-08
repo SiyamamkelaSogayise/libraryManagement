@@ -60,20 +60,6 @@ public class UserController {
 
 
 
-    @GetMapping("/history")
-    public String getBookHistory(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("loggedUser");
-
-
-
-        List<Book> borrowedBooks = bookService.getBooksBorrowedByUser(user);
-
-
-        model.addAttribute("books", borrowedBooks);
-        return "bookHistory"; // Return the name of the HTML template for the book history page
-    }
-
-
 
 
     @PostMapping("/history")

@@ -28,7 +28,9 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findByBorrowedIsTrue();
     Optional<Book> findByTitle(String title);
-    void deleteByTitle(String title);
+
+
+    List<Book> findByBorrowedById(Integer userId);
 
 
 

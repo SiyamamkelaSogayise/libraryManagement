@@ -176,10 +176,14 @@ public class BookController {
         return "redirect:/admin/books/list";
     }
 
+    @GetMapping("/history")
+    public String getBorrowedBooks(Model model, Principal principal) {
+        String emailAddress = principal.getName();
+        User user = userService.findByEmail(emailAddress);
+        List<Book> borrowedBooks = bookService.getBooksBorrowedByUser(user.getId());
+        model.addAttribute("books", borrowedBooks);
+        return "BookHistory"; // Ensure you have an HTML template named "history.html"
+    }
 
 
-
-
-
-    // Additional CRUD operations (update, delete, etc.) can be added here
 }

@@ -53,8 +53,8 @@ public class BookService {
         return bookRepository.save(book);
     }
 
-    public List<Book> getBooksBorrowedByUser(User user) {
-        return bookRepository.findByBorrowedByAndBorrowedIsTrue(user);
+    public List<Book> getBooksBorrowedByUser(Integer userId) {
+        return bookRepository.findByBorrowedById(userId);
     }
 
 
