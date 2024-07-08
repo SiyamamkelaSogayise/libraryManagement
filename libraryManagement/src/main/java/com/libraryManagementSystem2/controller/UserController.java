@@ -81,15 +81,33 @@ public class UserController {
         return "bookHistory"; // Return the name of the HTML template for the book history page
     }
 
-    @GetMapping("/settings")
-    public String getSettings() {
-        return "settings"; // Return the name of the HTML template for the settings page
+    @GetMapping("/updateProfile")
+    public String getSettings(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("loggedUser"); // Assuming user is stored in session after login
+        if (user == null) {
+            return "redirect:/login"; // Redirect to login if user is not in session
+        }
+        model.addAttribute("user", user);
+        return "usersettings"; // Return the name of the HTML template for the settings page
     }
 
-    @PostMapping("/settings")
-    public String settings() {
-        return "settings";
+    @PostMapping("/updateProfile")
+    public String updateUserProfile(@ModelAttribute("user") User user, Model model, BindingResult bindingResult, RedirectAttributes redirectAttributes, HttpSession session) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("error", "There were errors in the form submission.");
+            return "usersettings";
+        }
+
+        User updatedUser = userService.updateProfile(user);
+        if (updatedUser == null) {
+            model.addAttribute("error", "User not found or invalid update.");
+            return "usersettings";
+        }
+        session.setAttribute("loggedUser", updatedUser);
+        redirectAttributes.addFlashAttribute("message", "User updated successfully.");
+        return "redirect:/updateProfile";
     }
+
 
 
     @PostMapping("/register")
@@ -136,7 +154,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
+    public String login(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes) {
         System.out.println("Login request: " + user.getEmailAddress());
 
         // Validate input (optional based on your needs)
@@ -150,6 +168,7 @@ public class UserController {
         if (authenticatedUser == null) {
             return "login_page"; // Handle login failure
         } else {
+            session.setAttribute("loggedUser", authenticatedUser); // Store user in session
             redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
 
             if (authenticatedUser.isAdmin()) {
