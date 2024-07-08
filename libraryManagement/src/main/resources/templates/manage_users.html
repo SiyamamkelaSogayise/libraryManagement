@@ -54,15 +54,21 @@
     <div class="sidebar-header">
         <!--<img src="Library.png" alt="Library.png" class="logo" style="width: 100px; height: auto;">-->
         <span class="library-name">Library Management System</span>
+        </div>
+
+    <a th:href="@{/admin/dashboard}">
+        <i class="fas fa-plus icon"></i><span>Add a book</span></a>
+    <a  th:href="@{/admin/users}" >
+        <i class="fas fa-users"></i> <span>Manage Users</span>
+    </a>
+    <a th:href="@{/admin/books/list}">
+        <i class="fas fa-book"></i> <span>Available Books</span>
+    </a>
+    <a href="/logout">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+    </a>
     </div>
-    <a href="#" th:href="@{/admin/users}" class="active">Manage Users</a>
-    <a href="#" th:href="@{/admin/books/add}" class="active">Add a book</a>
-    <a href="#" th:href="@{/admin/books/list}" class="active">Available Books</a>
-    <a href="#" th:href="@{/logout}" class="active">Logout</a>
-    <!--  <a href="#" th:href="@{/issueBook}">Issue Book</a>
-     <a href="#" th:href="@{/listIssuedBooks}">List Issued Books</a>
-     <a href="#" th:href="@{/returnBooksToday}">Books to be Returned Today</a>-->
-</div>
+
 
 <div class="main-content">
     <div class="container">

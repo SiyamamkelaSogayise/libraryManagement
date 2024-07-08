@@ -2,11 +2,10 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>User Settings</title>
-    <link rel="stylesheet" th:href="@{/css/landing.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 
@@ -19,6 +18,11 @@
             font-family: "Poppins", sans-serif;
         }
 
+        body {
+            display: flex;
+            background-color: #E7F2F8;
+        }
+
         body a {
             color: black;
             text-decoration: none; /* Optional: Remove underline */
@@ -27,129 +31,7 @@
         body a:hover {
             color: darkviolet; /* Optional: Change color on hover */
         }
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
 
-        body {
-            display: flex;
-            margin: 0;
-            background-color: #E7F2F8;
-        }
-
-        .container {
-            text-align: center;
-            color: #333;
-            padding: 20px;
-            z-index: 1;
-            max-width: 1200px;
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            margin: 20px;
-            margin-left: 250px;
-            margin-top: 80px;
-            flex-grow: 1;
-        }
-
-        .forms-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 20px;
-        }
-
-        .forms-container section {
-            flex: 1;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin: 10px;
-        }
-
-        h1 {
-            margin-bottom: 30px;
-        }
-
-        h2 {
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="password"],
-        button {
-            width: 95%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #5cb85c;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #3A596F;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 300px;
-            background-image: url('land.jpg');
-            background-size: cover;
-            background-position: center;
-            z-index: -1;
-        }
-
-        footer {
-            background-color: #3A596F;
-            color: white;
-            padding: 10px 5px;
-            text-align: center;
-            width: 100%;
-            max-height: 150px;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: auto;
-        }
-
-        footer div {
-            margin: 0 20px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        footer i {
-            margin-right: 5px;
-        }
-
-        .btn_notif {
-            margin-top: 109px;
-        }
-
-        /* Sidebar styles */
         .sidebar {
             position: fixed;
             top: 0;
@@ -219,75 +101,173 @@
 
         .main-content {
             margin-left: 110px;
+            margin-top: 80px;
+            flex-grow: 1;
+            padding: 20px;
         }
 
-        footer .contact,
-        footer .address,
-        footer .opening {
-            flex: 1;
+        h1 {
+            color: black;
+            text-align: center;
         }
 
-        footer h3 {
-            margin-bottom: 10px;
+        h2 {
+            margin-bottom: 20px;
+            color: black;
+        }
+
+        form {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        input[type=text], input[type=number], input[type=email], input[type=tel] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+
+        button[type=submit] {
+            background-color: #4CAF50;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button[type=submit]:hover {
+            background-color: #45A049;
+        }
+
+        .alert {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #4CAF50;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .alert-success {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
         }
     </style>
+
     <script>
-        function showPopup(message) {
-        alert(message);
+        function showSuccessMessage() {
+            var successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 3000);
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-        const pushNotificationCheckbox = document.querySelector('input[name="pushNotifications"]');
-        pushNotificationCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-        showPopup('Push Notifications Enabled');
-        } else {
-        showPopup('Push Notifications Disabled');
+        function confirmUpdate(event) {
+            event.preventDefault();
+            if (confirm("Are you sure you want to update your profile?")) {
+                showSuccessMessage();
+                event.target.submit();
+            }
         }
-        });
-        });
     </script>
-
 </head>
 <body>
-<div class="container">
-    <h1>User Settings</h1>
+<div class="sidebar">
+    <div class="logo">
+        <ul class="main">
+            <span class="library-name"> Library Management System</span>
+            <li>
+                <a th:href="@{/userPortal}">
+                    <i class="fas fa-home"></i> <span>Home</span>
+                </a>
+            </li>
+            <li class="active">
+                <a th:href="@{/help}">
+                    <i class="fas fa-question-circle"></i> <span>Help</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/updateProfile}">
+                    <i class="fas fa-cog"></i> <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/logout}">
+                    <i class="fas fa-sign-out-alt"></i> <span>Sign Out</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="main-content">
+    <div class="container">
+        <h1>Profile settings</h1>
 
+        <!-- Display error message if any -->
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-    <div class="forms-container">
-        <!-- Update Profile Section-->
-        <section id="update-profile">
-            <h2>Update Profile</h2>
-            <form th:action="@{/settings}" th:object="${user}" method="post">
-                <label for="phoneNumber">Phone Number:</label><br>
-                <input type="text" id="phoneNumber" name="phoneNumber" th:value="*{phoneNumber}" required><br><br>
+        <!-- Success message div -->
+        <div id="success-message" class="alert alert-success">Profile updated successfully!</div>
 
-                <label for="address">Address:</label><br>
-                <input type="text" id="address" name="address" th:value="*{emailAddress}" required><br><br>
+        <form action="/updateProfile" th:object="${user}" method="post" onsubmit="confirmUpdate(event)">
+            <input type="hidden" th:field="*{id}" />
 
-                <button type="submit">Update Profile</button>
-            </form>
-        </section>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" th:field="*{address}" class="form-control" id="address" required />
+            </div>
 
-        <!-- Change Password Section
-        <section id="change-password">
-            <h2>Change Password</h2>
-            <form th:action="@{/password}" method="post">
-                <label for="idNumber">ID Number:</label><br>
-                <input type="text" id="idNumber" name="idNumber" required><br><br>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="tel" th:field="*{phoneNumber}" class="form-control" id="phoneNumber" required />
+            </div>
 
-                <label for="currentPassword">Current Password:</label><br>
-                <input type="password" id="currentPassword" name="currentPassword" required><br><br>
+            <div class="form-group">
+                <label for="emailAddress">Email Address</label>
+                <input type="email" th:field="*{emailAddress}" class="form-control" id="emailAddress" required />
+            </div>
 
-                <label for="newPassword">New Password:</label><br>
-                <input type="password" id="newPassword" name="newPassword" required><br><br>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="text" th:field="*{password}" class="form-control" id="password" required />
+            </div>
 
-                <label for="confirmPassword">Confirm New Password:</label><br>
-                <input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="text" th:field="*{confirmPassword}" class="form-control" id="confirmPassword" required />
+            </div>
 
-                <button type="submit">Change Password</button>
-            </form>
-        </section>-->
+            <div>
+                <button type="submit">Update</button>
+            </div>
+        </form>
     </div>
 </div>
 </body>

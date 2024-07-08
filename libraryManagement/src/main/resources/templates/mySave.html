@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<head>
+    <title>My Books</title>
+   <style>
+       body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+p {
+    font-size: 1.2em;
+    color: #666;
+    text-align: center;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #e2e2e2;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+li span {
+    font-size: 1.1em;
+    color: #333;
+}
+
+   </style>
+</head>
+<body>
+<h1>My Borrowed Books</h1>
+<div th:if="${books.size() == 0}">
+    <p>No books borrowed.</p>
+</div>
+<div th:if="${books.size() > 0}">
+    <ul>
+        <li th:each="book : ${books}">
+            <span th:text="${book.title}"></span> -
+            <span th:text="${book.borrowDate}"></span>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
+

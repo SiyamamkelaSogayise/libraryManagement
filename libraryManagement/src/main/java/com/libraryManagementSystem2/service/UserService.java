@@ -236,6 +236,22 @@ public User authenticate(String emailAddress, String password) {
         }
     }
 
+    public User updateProfile(User user) {
+        Optional<User> existingUserOpt = userRepository.findById(user.getId());
+        if (!existingUserOpt.isPresent()) {
+            return null; // User not found
+        }
+
+        User existingUser = existingUserOpt.get();
+        existingUser.setAddress(user.getAddress());
+        existingUser.setPhoneNumber(user.getPhoneNumber());
+        existingUser.setEmailAddress(user.getEmailAddress());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setConfirmPassword(user.getConfirmPassword());
+
+        return userRepository.save(existingUser);
+    }
+
 
 
 
