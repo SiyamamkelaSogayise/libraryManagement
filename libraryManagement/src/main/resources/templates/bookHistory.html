@@ -203,18 +203,17 @@
             <th>Book Title</th>
             <th>Borrowed Date</th>
             <th>Due Date</th>
-            <th>Action</th>
+            <th>Days Left/Overdue</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="book : ${books}">
             <td th:text="${book.title}"></td>
-            <td th:text="${#dates.format(book.borrowedDate, 'yyyy-MM-dd')}"></td>
-            <td th:text="${#dates.format(book.dueDate, 'yyyy-MM-dd')}"></td>
+            <td th:text="${#temporals.format(book.borrowedDate, 'yyyy-MM-dd')}"></td>
+            <td th:text="${#temporals.format(book.dueDate, 'yyyy-MM-dd')}"></td>
             <td>
-                <form th:action="@{'/return/' + ${book.id}}" method="post">
-                    <button type="submit" class="return-btn">Return</button>
-                </form>
+                <span th:if="${book.daysLeft < 0}" class="overdue">Overdue by <span th:text="${-book.daysLeft}"></span> days</span>
+                <span th:if="${book.daysLeft >= 0}" th:text="${book.daysLeft} + ' days left'"></span>
             </td>
         </tr>
         </tbody>

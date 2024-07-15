@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -148,6 +149,30 @@ public class BookService {
         return bookRepository.findByTitle(title).orElse(null);
     }
 
+   /* public List<Book> findBorrowedBooksByUser(User user) {
+        // Implement your logic to fetch borrowed books for the given user
+        return bookRepository.findByBorrower(user);
+    }*/
+
+    public List<Book> getBorrowedBooksForUser(User user) {
+        return bookRepository.findByBorrowedById(user.getId());
+    }
+
+    // Inside BookService.java
+
+    public List<Book> getBooksBorrowedByUser(User user) {
+        List<Book> borrowedBooks = bookRepository.findByBorrowedBy(user);
+        calculateDaysLeft(borrowedBooks);
+        return borrowedBooks;
+    }
+
+    private void calculateDaysLeft(List<Book> borrowedBooks) {
+        LocalDate currentDate = LocalDate.now();
+        for (Book book : borrowedBooks) {
+            long daysLeft = ChronoUnit.DAYS.between(currentDate, book.getDueDate());
+            book.setDaysLeft(daysLeft);
+        }
+    }
 
 
 

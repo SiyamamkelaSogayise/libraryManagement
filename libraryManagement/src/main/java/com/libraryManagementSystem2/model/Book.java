@@ -19,6 +19,15 @@ public class Book {
     private int quantity;
     private String author;
     private boolean borrowed;
+    private long daysLeft;
+
+    public long getDaysLeft() {
+        return daysLeft;
+    }
+
+    public void setDaysLeft(long daysLeft) {
+        this.daysLeft = daysLeft;
+    }
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

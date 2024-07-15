@@ -5,6 +5,7 @@ import com.libraryManagementSystem2.model.User;
 import com.libraryManagementSystem2.service.BookService;
 import com.libraryManagementSystem2.service.EmailService;
 import com.libraryManagementSystem2.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.time.temporal.ChronoUnit;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -177,13 +180,41 @@ public class BookController {
     }
 
     @GetMapping("/history")
-    public String getBorrowedBooks(Model model, Principal principal) {
-        String emailAddress = principal.getName();
-        User user = userService.findByEmail(emailAddress);
+    public String getBorrowedBooks(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("loggedUser");
+        if (user == null) {
+            return "redirect:/login"; // Redirect to login if user is not in session
+        }
         List<Book> borrowedBooks = bookService.getBooksBorrowedByUser(user.getId());
         model.addAttribute("books", borrowedBooks);
         return "BookHistory"; // Ensure you have an HTML template named "history.html"
     }
+
+    /*@GetMapping("/bookStatus")
+    public String bookStatus(Model model, User user) {
+        // Retrieve the list of borrowed books for the current user
+        List<Book> borrowedBooks = bookService.getBorrowedBooksForUser(user);
+
+        // Calculate days left or overdue for each book
+        LocalDate currentDate = LocalDate.now();
+        borrowedBooks.forEach(book -> {
+            long daysLeft = ChronoUnit.DAYS.between(currentDate, book.getDueDate());
+            book.setDaysLeft(daysLeft);
+        });
+
+        // Add the list to the model
+        model.addAttribute("books", borrowedBooks);
+        return "bookStatus";
+    }*/
+
+
+
+
+
+
+
+
+
 
 
 }

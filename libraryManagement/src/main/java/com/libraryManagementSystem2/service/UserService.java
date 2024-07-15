@@ -51,12 +51,12 @@ public class UserService {
 
 
     // Method for handling forgot password functionality
-    public User findByEmail(String emailAddress) {
+    public User findByEmailAddress(String emailAddress) {
         return userRepository.findByEmailAddress(emailAddress);
     }
 
     public boolean sendPasswordResetEmail(String emailAddress, String username) {
-        User user = findByEmail(emailAddress);
+        User user = findByEmailAddress(emailAddress);
         if (user != null && username.equals(user.getUsername())) {
             // Send the password reset email
             emailService.sendPasswordResetEmail(user);

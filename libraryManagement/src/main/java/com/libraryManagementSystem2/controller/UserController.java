@@ -62,11 +62,6 @@ public class UserController {
 
 
 
-    @PostMapping("/history")
-    public String getBookHistory() {
-        return "bookHistory"; // Return the name of the HTML template for the book history page
-    }
-
     @GetMapping("/updateProfile")
     public String getSettings(Model model, HttpSession session) {
         User user = (User) session.getAttribute("loggedUser"); // Assuming user is stored in session after login
@@ -186,7 +181,7 @@ public class UserController {
     @GetMapping("/userPortal/user")
     public String userPortal(Model model, Principal principal) {
         String userEmail = principal.getName(); // Assuming principal.getName() gives the user's email
-        User user = userService.findByEmail(userEmail); // Fetch user object from service based on email
+        User user = userService.findByEmailAddress(userEmail); // Fetch user object from service based on email
         model.addAttribute("user", user); // Add user object to the model
         return "userPortal"; // Return the Thymeleaf template name
     }
